@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: 卢俊元 Undergraduate in Materials Science and Engineering at SJTU
+subtitle: Undergraduate in Materials Science and Engineering at SJTU (卢俊元)
 
 profile:
   align: right
