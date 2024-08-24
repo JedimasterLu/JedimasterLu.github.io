@@ -2,16 +2,14 @@
 layout: about
 title: about
 permalink: /
-subtitle: Undergraduate in Materials Science and Engineering at SJTU (卢俊元)
+subtitle: Undergraduate in Materials Science and Engineering at SJTU
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>Mobile: +86 18617123595 </p>
-    <p>800 Dongchuan Road </p>
-    <p>Shanghai, China 200240 </p>
+    <p>Mobile: +86 18617123595<br>800 Dongchuan Road<br>Shanghai, China 200240</p>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"

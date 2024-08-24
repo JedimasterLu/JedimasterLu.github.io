@@ -7,8 +7,8 @@
 // Set font
 
 body {
-  font-family: -apple-system, Lato, Arial, sans-serif;
-  font-weight: 500;
+  font-family: Lato, -apple-system, 'Roboto', Verdana, Arial, Helvetica, simhei, sans-serif;
+  font-weight: 400;
 }
 
 p,
@@ -205,7 +205,7 @@ ul.task-list input[type="checkbox"] {
   .more-info {
     margin-bottom: 5px;
     margin-top: 5px;
-    font-style: italic;
+    font-family: 'Courier New', Courier, monospace;
 
     p {
       display: inline-block;

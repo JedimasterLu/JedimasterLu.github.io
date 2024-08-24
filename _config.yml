@@ -2,10 +2,10 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: blank # the website title (if blank, full name will be used instead)
+title: Junyuan's Homepage # the website title (if blank, full name will be used instead)
 first_name: Junyuan
-middle_name: 
-last_name: Lu
+middle_name: Lu
+last_name: (卢俊元)
 email: lujunyuan@sjtu.edu.cn
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   A personal academic website. Based on [*folio](https://github.com/bogoli/-folio) design.
