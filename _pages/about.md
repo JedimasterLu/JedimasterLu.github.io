@@ -5,13 +5,13 @@ permalink: /
 subtitle: 卢俊元 Undergraduate in Materials Science and Engineering at SJTU
 
 profile:
-  align: left
+  align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>Mobile: +86 18617123595</p>
-    <p>800 Dongchuan Road</p>
-    <p>Shanghai, China 200240</p>
+    <p>Mobile: +86 18617123595 </p>
+    <p>800 Dongchuan Road </p>
+    <p>Shanghai, China 200240 </p>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
