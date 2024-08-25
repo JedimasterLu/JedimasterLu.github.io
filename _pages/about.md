@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: Undergraduate in Materials Science and Engineering at SJTU (卢俊元)
+subtitle: Undergraduate in MSE at SJTU (卢俊元)
 
 profile:
   align: right
@@ -13,11 +13,14 @@ profile:
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
-social: true # includes social icons at the bottom of the page
+social: false # includes social icons at the bottom of the page
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+I am a final-year undergraduate in Materials Science and Engineering at Shanghai Jiao Tong University, studying in the International Honor Class of [School of Materials Science and Engineering](https://en.smse.sjtu.edu.cn/).
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+I am working on a project about high-throughput screening of combinatorial O-PCMs in the group of [Prof. Hong Wang](https://zias.sjtu.edu.cn/info/1268/1410.htm) at SJTU. I am also involved in the simulation and modeling of materials by doing another project about GNN accelerated phase-field simulation of grain growth under the supervision of [Prof. Hong Liu](https://smse.sjtu.edu.cn/people/detail/39) at SJTU. Besides, I completed projects about solid-electrolyte of lithium-ion batteries, supervised by [Prof. Huanan Duan](https://en.smse.sjtu.edu.cn/people_detail/195), and a DQN flight model. Please check my [projects page](https://JedimasterLu.github.io/projects/) for more details.
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+I am currently looking for a PhD position in materials science and engineering. My research interests mainly lie in combining machine learning and computational approaches with data-based experiments to investigate phenomena in functional materials and design materials with optimal properties. 
+
+If my research fits what you're looking for, please feel free to [contact me](lujunyuan@sjtu.edu.cn). I'd be glad to hear from you!
+
