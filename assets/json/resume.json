@@ -37,9 +37,9 @@
   ],
   "projects": [
     {
-      "name": "Quantum Computing",
-      "summary": "Quantum computing is the use of quantum-mechanical phenomena such as superposition and entanglement to perform computation. Computers that perform quantum computations are known as quantum computers.",
-      "highlights": ["Quantum Teleportation", "Quantum Cryptography"],
+      "name": "Electron Conductivity of LLZTO",
+      "summary": "LLZTO is a promising solid electrolyte for solid-state lithium-ion batteries. A symmetric Hebb-Wagner polarization method is presented to measure the electron conductivity of LLZTO.",
+      "highlights": ["Perform electrochemical characterization", "Quantum Cryptography"],
       "startDate": "2018-01-01",
       "endDate": "2018-01-01",
       "url": "https://example.com"
