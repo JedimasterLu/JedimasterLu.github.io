@@ -7,7 +7,7 @@
 // Set font
 
 body {
-  font-family: -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-family: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
   text-align: justify;
   hyphens: auto;
 }
@@ -29,8 +29,17 @@ strong {
 
 ul,
 ol {
-  text-align: left;
+  text-align: start;
   hyphens: none;
+}
+
+h2 {
+  text-align: start;
+}
+
+h6 {
+  text-align: justify;
+  hyphens: auto;
 }
 
 hr {
@@ -191,6 +200,7 @@ ul.task-list input[type="checkbox"] {
   .card-title {
     color: var(--global-text-color);
     text-align: left;
+    hyphens: none;
   }
 
   .card-body {
@@ -1086,7 +1096,6 @@ nav[data-toggle="toc"] {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      text-align: left;
     }
 
     &:hover {
