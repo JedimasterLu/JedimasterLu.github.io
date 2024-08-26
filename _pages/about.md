@@ -1,6 +1,6 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
 subtitle: Undergraduate in MSE at SJTU (卢俊元)
 

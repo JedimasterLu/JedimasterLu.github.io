@@ -32,7 +32,18 @@
       "startDate": "2021-09-01",
       "endDate": "2025-06-01",
       "score": "10",
-      "courses": ["GPA: 88/100 (3.75/4.3), Rank: 14/117", "International Class, taking courses in English"]
+      "courses": ["GPA: 88/100 (3.75/4.3), Rank: 14/117", "'Hsu Tzuyao' Honor Class, taking courses in English"]
+    },
+    {
+      "institution": "Shanghai Jiao Tong University",
+      "location": "Shanghai, China",
+      "url": "https://en.smse.sjtu.edu.cn/new/4337",
+      "area": "Zhi-Hong” International Summer School of Advanced Materials",
+      "studyType": "Summer School",
+      "startDate": "2023-07-20",
+      "endDate": "2023-08-01",
+      "score": "10",
+      "courses": ["Certification of completion"]
     }
   ],
   "projects": [
@@ -83,11 +94,18 @@
   ],
   "awards": [
     {
-      "title": "Nobel Prize in Physics",
-      "date": "1921-11-01",
-      "awarder": "Royal Swedish Academy of Sciences",
-      "url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/",
-      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
+      "title": "Suzhou Industrial Park (SIP) Scholarship",
+      "date": "2022-12-01",
+      "awarder": "SIP Administrative Committee",
+      "url": "https://www.sipac.gov.cn/szgyyqenglish/index.shtml",
+      "summary": "Awarded to students with outstanding academic performance. The scholarship is 7,500 RMB a year."
+    },
+    {
+      "title": "Huawei Scholarship",
+      "date": "2023-12-01",
+      "awarder": "Huawei Technologies Co. Ltd.",
+      "url": "https://www.huawei.com/en/",
+      "summary": "Awarded to students with outstanding academic performance. The scholarship is 5,000 RMB a year."
     }
   ],
   "publications": [
