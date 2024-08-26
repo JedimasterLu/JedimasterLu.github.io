@@ -37,12 +37,28 @@
   ],
   "projects": [
     {
+      "name": "High-throughput Screening of O-PCMs",
+      "summary": "High-throughput characterization methods is used on combinatorial synthesized O-PCMs thin films to construct composition-structure-properties relations of the material.",
+      "highlights": ["High-throughput methods", "Combinatorial ion beam deposition"],
+      "startDate": "2023-06-01",
+      "endDate": "2025-06-01",
+      "url": "https://example.com"
+    },
+    {
       "name": "Electron Conductivity of LLZTO",
       "summary": "LLZTO is a promising solid electrolyte for solid-state lithium-ion batteries. A symmetric Hebb-Wagner polarization method is presented to measure the electron conductivity of LLZTO.",
-      "highlights": ["Perform electrochemical characterization", "Quantum Cryptography"],
-      "startDate": "2018-01-01",
-      "endDate": "2018-01-01",
+      "highlights": ["Electrochemical characterization", "Hebb-Wagner polarization method"],
+      "startDate": "2022-02-01",
+      "endDate": "2023-02-01",
       "url": "https://example.com"
+    },
+    {
+      "name": "Air Combat Model",
+      "summary": "A DQN model is constructed to manipulate F-16C in DCS World. The model is able to use actions in the defined action space to fight with computer-controlled aircraft.",
+      "highlights": ["Deep reinforcement learning", "Flight simulation"],
+      "startDate": "2022-12-01",
+      "endDate": "2023-09-01",
+      "url": "https://pan.baidu.com/s/1tvU51o6ZC0hHwrWZWM1hOw?pwd=i2u0"
     }
   ],
   "volunteer": [
