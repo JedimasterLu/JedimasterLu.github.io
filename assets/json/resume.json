@@ -70,14 +70,6 @@
       "startDate": "2022-02-01",
       "endDate": "2023-02-01",
       "url": "https://example.com"
-    },
-    {
-      "name": "Flight Modeling Based on Deep Reinforcement Learning",
-      "summary": "A DQN model is constructed to manipulate F-16C in DCS World. The model is able to use actions in the defined action space to fight with computer-controlled aircraft.",
-      "highlights": ["Deep reinforcement learning", "Flight simulation"],
-      "startDate": "2022-12-01",
-      "endDate": "2023-09-01",
-      "url": "https://pan.baidu.com/s/1tvU51o6ZC0hHwrWZWM1hOw?pwd=i2u0"
     }
   ],
   "volunteer": [
@@ -115,13 +107,6 @@
       "releaseDate": "2024-08-01",
       "url": "https://www.sciencedirect.com/science/article/pii/S1001841724008635",
       "summary": "An high-throughput workflow was used for quantitatively predicting the Fe/Mn ratio and the energy density mapping of LMFP, revealing nonlinear relationships between the Fe/Mn ratio and electrochemical properties, elucidating the quantitative chemical composition-energy density map of LMFP. My contribution includes writing and editing."
-    },
-    {
-      "name": "Research of intelligent air combat model based on reinforcement learning",
-      "publisher": "Command Control and Simulation",
-      "releaseDate": "2024-08-01",
-      "url": "https://www.zhkzyfz.cn/CN/10.3969/j.issn.1673-3819.2024.04.005",
-      "summary": "DQN algorithm is used to train a model interactively with AI enemies in DCS World,that is able to manipulate aircraft to a degree and many cases of air combat, by analyzing which a collection of winning, losing and dual samples is derived. I am responsible for model training, network construction, and writing."
     }
   ],
   "skills": [
