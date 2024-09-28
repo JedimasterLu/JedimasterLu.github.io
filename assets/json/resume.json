@@ -1,7 +1,7 @@
 {
   "basics": {
     "name": "Junyuan Lu",
-    "label": "Student",
+    "label": "Undergraduate",
     "image": "",
     "email": "lujunyuan@sjtu.edu.cn",
     "phone": "+86 18617123595",
@@ -15,11 +15,6 @@
       "region": "Shanghai"
     },
     "profiles": [
-      {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
-      }
     ]
   },
   "education": [
@@ -42,45 +37,53 @@
       "studyType": "Summer School",
       "startDate": "2023-07-20",
       "endDate": "2023-08-01",
-      "score": "10",
+      "score": "9",
       "courses": ["Certification of completion"]
     }
   ],
   "projects": [
     {
-      "name": "GNN Accelerated Phase Field Simulation",
-      "summary": "Phase field simulation on the grain growth of polycrystal samples under beam-laser additive manufacturing. GNN is used in the cunstruction of polycrystal meshed to accelerate the simulation.",
+      "name": "Machine Learning Accelerated Phase Field Simulation",
+      "summary": "Phase field methods on the grain growth of polycrystal samples under beam-laser additive manufacturing. GNN is used in the cunstruction of polycrystal meshed to accelerate the simulation. Introduce nucleation process into the existing GNN-based model and improve the accuracy of the model.",
       "highlights": ["Phase field method", "Graph neural network"],
       "startDate": "2024-07-01",
       "endDate": "2025-06-01",
       "url": "https://example.com"
     },
     {
-      "name": "High-throughput Screening of O-PCMs",
+      "name": "High-throughput Screening of Combinatorial O-PCM Thin Films",
       "summary": "High-throughput characterization methods is used on combinatorial synthesized O-PCMs thin films to construct composition-structure-properties relations of the material.",
-      "highlights": ["High-throughput methods", "Combinatorial ion beam deposition"],
+      "highlights": ["High-throughput characterizations", "Combinatorial ion beam deposition"],
       "startDate": "2023-06-01",
       "endDate": "2025-06-01",
       "url": "https://example.com"
     },
     {
-      "name": "Electron Conductivity of LLZTO",
+      "name": "Measurement of the Electron Conductivity of LLZTO",
       "summary": "LLZTO is a promising solid electrolyte for solid-state lithium-ion batteries. A symmetric Hebb-Wagner polarization method is presented to measure the electron conductivity of LLZTO.",
       "highlights": ["Electrochemical characterization", "Hebb-Wagner polarization method"],
       "startDate": "2022-02-01",
       "endDate": "2023-02-01",
       "url": "https://example.com"
+    },
+    {
+      "name": "American Sign Language Detection Model",
+      "summary": "A ANN model is builded in Pytorch that can output alphabets from a given image of a hand gesture based on the definition of American sign language. It is able to recognize 26 alphabets in realtime with very high accuracy. The model along with a gui demo is available on my github.",
+      "highlights": ["Deep learning", "A A-level course project"],
+      "startDate": "2023-05-01",
+      "endDate": "2023-06-01",
+      "url": "https://example.com"
     }
   ],
   "volunteer": [
     {
-      "organization": "People's Climate March",
-      "location": "Zurich, Switzerland",
-      "position": "Lead Organizer",
+      "organization": "School of Materials Science and Engineering",
+      "location": "Shanghai, China",
+      "position": "Volunteer",
       "url": "https://example.com",
-      "startDate": "2014-04-01",
-      "endDate": "2015-07-01",
-      "summary": "Lead organizer for the New York City branch of the People's Climate March, the largest climate march in history.",
+      "startDate": "2024-08-01",
+      "endDate": "2024-09-01",
+      "summary": "Helped welcome new graduate students of the school.",
       "highlights": ["Awarded 'Climate Hero' award by Greenpeace for my efforts organizing the march.", "Men of the year 2014 by Time magazine"]
     }
   ],
