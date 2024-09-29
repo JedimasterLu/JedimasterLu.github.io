@@ -75,16 +75,27 @@
       "url": "https://example.com"
     }
   ],
+  "work": [
+    {
+      "name": "Batterotech Co., Ltd.",
+      "position": "Intern",
+      "url": "https://en.batterotech.com/",
+      "startDate": "2024-09-02",
+      "endDate": "2024-09-14",
+      "summary": "Learned about the production process of lithium-ion batteries, including the preparation of cathode and anode materials, the assembly of cells, and the testing of batteries. Also learned about the safety regulations and the quality control of the products. Worked with engineers to perform electrochemical tests on batteries.",
+      "highlights": ["Lithium-ion batteries", "Electrochemical tests"]
+    }
+  ],
   "volunteer": [
     {
       "organization": "School of Materials Science and Engineering",
       "location": "Shanghai, China",
-      "position": "Volunteer",
-      "url": "https://example.com",
+      "position": "Welcome Volunteer",
+      "url": "",
       "startDate": "2024-08-01",
       "endDate": "2024-09-01",
       "summary": "Helped welcome new graduate students of the school.",
-      "highlights": ["Awarded 'Climate Hero' award by Greenpeace for my efforts organizing the march.", "Men of the year 2014 by Time magazine"]
+      "highlights": ["Communication", "Organization"]
     }
   ],
   "awards": [
@@ -161,6 +172,39 @@
       "language": "English",
       "fluency": "TOEFL: 110 (R30, L29, S25, W26)",
       "icon": ""
+    }
+  ],
+  "interests": [
+    {
+      "name": "Materials Science",
+      "icon": "fa-solid fa-tag",
+      "keywords": [
+        "Computational Materials Science",
+        "Energy Materials",
+        "Functional Materials",
+        "Machine Learning",
+        "High-throughput Methods"
+      ]
+    },
+    {
+      "name": "Classical Music",
+      "icon": "fa-solid fa-tag",
+      "keywords": [
+        "Pytor Illich Tchaikovsky",
+        "Ludwig van Beethoven",
+        "Johannes Brahms",
+        "Johann Sebastian Bach",
+        "Violin"
+      ]
+    },
+    {
+      "name": "Sport",
+      "icon": "fa-solid fa-tag",
+      "keywords": [
+        "Table tennis",
+        "Baseball",
+        "Formula 1"
+      ]
     }
   ]
 }
