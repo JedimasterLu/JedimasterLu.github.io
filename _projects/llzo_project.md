@@ -3,7 +3,7 @@ layout: page
 title: Solid Electrolyte
 description: A symmetric Hebb-Wagner method to measure the electron conductivity of LLZTO
 img: assets/img/llzo_cover.png
-importance: 2
+importance: 3
 category: work
 related_publications: false
 ---
