@@ -10,12 +10,12 @@ type PaperEntry = {
   fields: BibFields;
 };
 
-type SelectedPublicationsProps = {
+type PublicationsProps = {
   bibFileName?: string;
   authorName?: string;
 };
 
-const { bibFileName, authorName } = Astro.props as SelectedPublicationsProps;
+const { bibFileName, authorName } = Astro.props as PublicationsProps;
 
 // 以构建时（服务器端）方式读取 bib 文件并解析，默认从 src/data 下读取
 const bibCandidates = [
@@ -210,6 +210,36 @@ const groupedPapers: GroupedPapers[] = Array.from(
     border-bottom: 1px solid var(--rule);
   }
 
+  .pub-authors {
+  }
+
+  .pub-author-hidden {
+    display: inline-flex;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    /* font-size: inherit;
+    line-height: inherit;
+    vertical-align: baseline; */
+    transition: opacity 0.35s ease-in-out;
+  }
+
+  .pub-authors:hover .pub-author-hidden {
+    max-width: 100%;
+    opacity: 1;
+  }
+
+  .pub-authors:hover .pub-author-toggle {
+    opacity: 0;
+    transition-delay: 0s;
+    pointer-events: none;
+  }
+
+  .pub-author-toggle:hover {
+    color: var(--link);
+  }
+
   .pub-main {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 160px;
@@ -362,14 +392,17 @@ const groupedPapers: GroupedPapers[] = Array.from(
                   <div class="pub-content">
                     <div class="pub-text">
                       <div class="pub-meta">
-                        <div>
-                          {visibleAuthors.map((author, index) => (
-                            <span>
-                              {index > 0 ? ', ' : ''}
-                              {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
-                            </span>
-                          ))}
-                          {hasMoreAuthors ? <span>...</span> : null}
+                        <div class="pub-authors">
+                          {authors.map((author, index) => {
+                            const isHidden = index >= 3 && hasMoreAuthors;
+                            return (
+                              <span class={isHidden ? 'pub-author-hidden' : ''}>
+                                {index > 0 ? ', ' : ''}
+                                {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
+                              </span>
+                            );
+                          })}
+                          {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
                         </div>
                         <div class="pub-citation">
                           {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
@@ -392,14 +425,17 @@ const groupedPapers: GroupedPapers[] = Array.from(
                 <div class="pub-content">
                   <div class="pub-text">
                     <div class="pub-meta">
-                      <div>
-                        {visibleAuthors.map((author, index) => (
-                          <span>
-                            {index > 0 ? ', ' : ''}
-                            {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
-                          </span>
-                        ))}
-                        {hasMoreAuthors ? <span>...</span> : null}
+                      <div class="pub-authors">
+                        {authors.map((author, index) => {
+                          const isHidden = index >= 3 && hasMoreAuthors;
+                          return (
+                            <span class={isHidden ? 'pub-author-hidden' : ''}>
+                              {index > 0 ? ', ' : ''}
+                              {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
+                            </span>
+                          );
+                        })}
+                        {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
                       </div>
                       <div class="pub-citation">
                         {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
@@ -440,10 +476,14 @@ const groupedPapers: GroupedPapers[] = Array.from(
     });
   }
 
+  function setupAllToggles() {
+    setupAbstractToggles();
+  }
+
   // Set up on initial load
-  setupAbstractToggles();
+  setupAllToggles();
   // Set up on Astro view transitions
-  document.addEventListener('astro:page-load', setupAbstractToggles);
+  document.addEventListener('astro:page-load', setupAllToggles);
 </script>        {f.abstract ? (
                 <div class="pub-abstract" id={`abstract-${p.key}`}>
                   {f.abstract}

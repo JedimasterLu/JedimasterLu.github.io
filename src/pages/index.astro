@@ -1,5 +1,5 @@
 ---
-import SelectedPublications from "../components/SelectedPublications.astro";
+import Publications from "../components/Publications.astro";
 
 const scholarId = "g34jrUsAAAAJ";
 const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
@@ -273,7 +273,7 @@ try {
                 display: grid;
                 grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr);
                 gap: 28px;
-                margin-top: 28px;
+                margin-top: 2rem;
             }
 
             .body-grid h2 {
@@ -393,7 +393,7 @@ try {
                             </div>
                         </div>
                     <h2>Publications</h2>
-                    <SelectedPublications bibFileName="papers.bib" authorName="Junyuan Lu" />
+                    <Publications bibFileName="papers.bib" authorName="Junyuan Lu" />
                     <p class="no-justify">
                         <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
                         {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
