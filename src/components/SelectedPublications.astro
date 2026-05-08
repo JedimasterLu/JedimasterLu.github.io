@@ -1,0 +1,458 @@
+---
+import fs from 'fs/promises';
+import path from 'path';
+
+type BibFields = Record<string, string>;
+
+type PaperEntry = {
+  type: string;
+  key: string;
+  fields: BibFields;
+};
+
+type SelectedPublicationsProps = {
+  bibFileName?: string;
+  authorName?: string;
+};
+
+const { bibFileName, authorName } = Astro.props as SelectedPublicationsProps;
+
+// 以构建时（服务器端）方式读取 bib 文件并解析，默认从 src/data 下读取
+const bibCandidates = [
+  ...(bibFileName ? [path.join(process.cwd(), 'src', 'data', bibFileName)] : []),
+];
+
+let bib = '';
+for (const candidate of bibCandidates) {
+  try {
+    bib = await fs.readFile(candidate, 'utf8');
+    break;
+  } catch (e) {
+    // continue trying fallback paths
+  }
+}
+
+const images = import.meta.glob('../img/*.{png,jpg,jpeg,svg,gif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const imageMap: Record<string, string> = {};
+for (const k in images) {
+  const parts = k.split('/');
+  const name = parts[parts.length - 1];
+  imageMap[name] = images[k];
+}
+
+function parseBib(bibText: string): PaperEntry[] {
+  if (!bibText) return [];
+  const entries = bibText.split(/@(?=[a-zA-Z]+)/).map((s: string) => s.trim()).filter(Boolean);
+  const out: PaperEntry[] = [];
+  for (const raw of entries) {
+    const m = raw.match(/^([a-zA-Z]+)\s*\{\s*([^,\s]+)\s*,([\s\S]*)\}\s*$/);
+    if (!m) continue;
+    const [, type, key, body] = m;
+    const fields: BibFields = {};
+    let index = 0;
+
+    const skipSeparators = () => {
+      while (index < body.length && /[\s,]/.test(body[index])) index += 1;
+    };
+
+    const readName = () => {
+      const start = index;
+      while (index < body.length && /[a-zA-Z0-9_\-]/.test(body[index])) index += 1;
+      return body.slice(start, index).toLowerCase();
+    };
+
+    const readValue = () => {
+      skipSeparators();
+      if (body[index] === '{') {
+        let depth = 0;
+        const start = index + 1;
+        while (index < body.length) {
+          const ch = body[index];
+          if (ch === '{') depth += 1;
+          else if (ch === '}') {
+            depth -= 1;
+            if (depth === 0) {
+              const value = body.slice(start, index);
+              index += 1;
+              return value;
+            }
+          }
+          index += 1;
+        }
+        return body.slice(start);
+      }
+
+      if (body[index] === '"') {
+        index += 1;
+        const start = index;
+        while (index < body.length && body[index] !== '"') index += 1;
+        const value = body.slice(start, index);
+        if (body[index] === '"') index += 1;
+        return value;
+      }
+
+      const start = index;
+      while (index < body.length && body[index] !== ',' && body[index] !== '\n') index += 1;
+      return body.slice(start, index).trim();
+    };
+
+    while (index < body.length) {
+      skipSeparators();
+      if (index >= body.length) break;
+      const name = readName();
+      skipSeparators();
+      if (body[index] !== '=') {
+        index += 1;
+        continue;
+      }
+      index += 1;
+      const val = readValue().replace(/\s+/g, ' ').trim();
+      if (name) fields[name] = val;
+    }
+    out.push({ type, key, fields });
+  }
+  return out;
+}
+
+function splitAuthors(authorText: string): string[] {
+  if (!authorText) return [];
+  return authorText.split(/\s+and\s+/i).map((author: string) => author.trim()).filter(Boolean);
+}
+
+function normalizeAuthorName(name: string): string {
+  return name.toLowerCase().replace(/[{}\.]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function isUserAuthor(author: string): boolean {
+  if (!authorName) return false;
+  return normalizeAuthorName(formatAuthorName(author)) === normalizeAuthorName(authorName);
+}
+
+function formatTitle(title: string | undefined): string {
+  if (!title) return '';
+  return title.replace(/[{}]/g, '');
+}
+
+function formatAuthorName(author: string): string {
+  const parts = author.split(',').map((part: string) => part.trim()).filter(Boolean);
+  if (parts.length >= 2) {
+    const family = parts[0];
+    const given = parts.slice(1).join(', ');
+    return `${given} ${family}`.replace(/\s+/g, ' ').trim();
+  }
+  return author.replace(/[{}]/g, '').trim();
+}
+
+function renderAuthor(author: string): string {
+  return formatAuthorName(author).replace(/[{}]/g, '').trim();
+}
+
+function formatDoiUrl(doi: string | undefined): string | null {
+  if (!doi) return null;
+  const trimmed = doi.replace(/[{}]/g, '').trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^doi\.org\//i.test(trimmed)) return `https://${trimmed}`;
+  return `https://doi.org/${trimmed}`;
+}
+
+const papers = parseBib(bib);
+
+type GroupedPapers = {
+  year: string;
+  entries: PaperEntry[];
+};
+
+const groupedPapers: GroupedPapers[] = Array.from(
+  papers.reduce((map, paper) => {
+    const year = paper.fields.year?.trim() || 'Unknown';
+    const list = map.get(year) ?? [];
+    list.push(paper);
+    map.set(year, list);
+    return map;
+  }, new Map<string, PaperEntry[]>()),
+)
+  .map(([year, entries]) => ({
+    year,
+    entries,
+  }))
+  .sort((left, right) => {
+    if (left.year === 'Unknown') return 1;
+    if (right.year === 'Unknown') return -1;
+    return Number(right.year) - Number(left.year);
+  });
+---
+
+<style>
+  .pub-list {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .pub-year-group {
+    display: grid;
+    margin-bottom: 0.5rem;
+  }
+
+  .pub-year-title {
+    margin: 0 0 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .pub-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pub-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 160px;
+    gap: 16px;
+    align-items: start;
+    position: relative;
+  }
+
+  .pub-content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .pub-text {
+    min-width: 0;
+  }
+
+  .pub-meta {
+    color: var(--muted);
+    font-size: 0.97rem;
+    display: grid;
+    gap: 2px;
+  }
+
+  .pub-citation {
+    line-height: 1.5;
+  }
+
+  .pub-journal {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .pub-title {
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .pub-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
+  .pub-link a {
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  .pub-doi {
+    color: var(--link);
+    text-decoration: none;
+    font-size: 1rem;
+  }
+
+  .pub-doi:hover {
+    text-decoration: underline;
+  }
+
+  .pub-actions-sep {
+    color: var(--ink);
+  }
+
+  .pub-link a:hover {
+    text-decoration: underline;
+  }
+
+  .pub-abstract-toggle {
+    background: none;
+    border: none;
+    color: var(--link);
+    cursor: pointer;
+    padding: 0;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  .pub-abstract-toggle:hover {
+    text-decoration: underline;
+  }
+
+  .pub-abstract {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-top 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;
+    margin-top: 0;
+    font-size: 0.8rem;
+    color: var(--ink-muted, #676767);
+    line-height: 1.2;
+    text-align: justify;
+  }
+
+  .pub-abstract.is-expanded {
+    max-height: 1000px;
+    opacity: 1;
+    padding: 0px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pub-preview img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin-top: 2px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  @media (max-width: 640px) {
+    .pub-preview img {
+      max-width: 160px;
+    }
+
+    .pub-main {
+      grid-template-columns: minmax(0, 1fr) 160px;
+      gap: 12px;
+    }
+  }
+</style>
+
+<div class="pub-list">
+  {papers.length === 0 ? (
+    <div class="note">No publications found in src/data/paper.bib</div>
+  ) : (
+    groupedPapers.map(({ year, entries }) => (
+      <section class="pub-year-group">
+        <h3 class="pub-year-title">{year}</h3>
+        {entries.map((p: PaperEntry) => {
+          const f = p.fields;
+          const previewFile = f.preview ? f.preview.split('/').pop() : null;
+          const previewUrl = previewFile && imageMap[previewFile] ? imageMap[previewFile] : null;
+          const authors = splitAuthors(f.author);
+          const visibleAuthors = authors.slice(0, 3);
+          const hasMoreAuthors = authors.length > 3;
+          const hasPreview = Boolean(previewUrl);
+          const doiUrl = formatDoiUrl(f.doi);
+          return (
+            <div class="pub-item" data-key={p.key}>
+              <div class="pub-title">{formatTitle(f.title)}</div>
+              {hasPreview ? (
+                <div class="pub-main">
+                  <div class="pub-content">
+                    <div class="pub-text">
+                      <div class="pub-meta">
+                        <div>
+                          {visibleAuthors.map((author, index) => (
+                            <span>
+                              {index > 0 ? ', ' : ''}
+                              {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
+                            </span>
+                          ))}
+                          {hasMoreAuthors ? <span>...</span> : null}
+                        </div>
+                        <div class="pub-citation">
+                          {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
+                          {f.year ? <span>{f.journal ? ', ' : ''}{f.year}</span> : null}
+                        </div>
+                      </div>
+                      <div class="pub-actions">
+                        {f.url ? <div class="pub-link"><a href={f.url} target="_blank" rel="noopener">Link</a></div> : null}
+                        {f.abstract ? <button class="pub-abstract-toggle" aria-expanded="false" aria-controls={`abstract-${p.key}`}>Abstract</button> : null}
+                        {f.abstract && doiUrl ? <span class="pub-actions-sep">|</span> : null}
+                        {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pub-preview">
+                    <img src={previewUrl} alt={`preview-${p.key}`} />
+                  </div>
+                </div>
+              ) : (
+                <div class="pub-content">
+                  <div class="pub-text">
+                    <div class="pub-meta">
+                      <div>
+                        {visibleAuthors.map((author, index) => (
+                          <span>
+                            {index > 0 ? ', ' : ''}
+                            {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
+                          </span>
+                        ))}
+                        {hasMoreAuthors ? <span>...</span> : null}
+                      </div>
+                      <div class="pub-citation">
+                        {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
+                        {f.year ? <span>{f.journal ? ', ' : ''}{f.year}</span> : null}
+                      </div>
+                    </div>
+                    <div class="pub-actions">
+                      {f.url ? <div class="pub-link"><a href={f.url} target="_blank" rel="noopener">Link</a></div> : null}
+                      {f.abstract ? <button class="pub-abstract-toggle" aria-expanded="false" aria-controls={`abstract-${p.key}`}>Abstract</button> : null}
+                      {f.abstract && doiUrl ? <span class="pub-actions-sep">|</span> : null}
+                      {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
+                    </div>
+                  </div>
+                </div>
+              )}
+      
+
+<script>
+  function setupAbstractToggles() {
+    const buttons = document.querySelectorAll('.pub-abstract-toggle');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        
+        const controls = button.getAttribute('aria-controls');
+        if (controls) {
+          const abstractElt = document.getElementById(controls);
+          if (abstractElt) {
+            if (!expanded) {
+              abstractElt.classList.add('is-expanded');
+            } else {
+              abstractElt.classList.remove('is-expanded');
+            }
+          }
+        }
+      });
+    });
+  }
+
+  // Set up on initial load
+  setupAbstractToggles();
+  // Set up on Astro view transitions
+  document.addEventListener('astro:page-load', setupAbstractToggles);
+</script>        {f.abstract ? (
+                <div class="pub-abstract" id={`abstract-${p.key}`}>
+                  {f.abstract}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </section>
+    ))
+  )}
+</div>

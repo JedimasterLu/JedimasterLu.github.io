@@ -1,17 +1,407 @@
 ---
+import SelectedPublications from "../components/SelectedPublications.astro";
 
+const scholarId = "g34jrUsAAAAJ";
+const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
+
+let citations = "";
+let hIndex = "";
+
+try {
+    const res = await fetch(scholarUrl);
+    if (res.ok) {
+        const html = await res.text();
+        const matches = html.match(/<td class="gsc_rsb_std">(\d+)<\/td>/g);
+        if (matches && matches.length >= 3) {
+            citations = matches[0].replace(/<[^>]+>/g, '');
+            hIndex = matches[2].replace(/<[^>]+>/g, '');
+        }
+    }
+} catch (e) {
+    console.error("Failed to fetch Google Scholar stats");
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Junyuan Lu</title>
+        <style>
+            @font-face {
+                font-family: "Harding";
+                src: url("/font/Harding_regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Harding";
+                src: url("/font/Harding_italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Harding";
+                src: url("/font/Harding_bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Harding";
+                src: url("/font/Harding_bold_italic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            :root {
+                --ink: #111111;
+                --muted: #222222;
+                --rule: #1b1b1b;
+                --accent: #185ba8;
+                --link: #0169a5;
+                --paper: #ffffff;
+                --page-max: 1024px;
+                --news-date-width: 110px;
+                --news-mid-width: 12px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: "Harding", serif;
+                color: var(--ink);
+                background: var(--paper);
+            }
+
+            a {
+                color: var(--link);
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            h1,
+            h2,
+            h3 {
+                margin: 0;
+                font-weight: 700;
+                line-height: 1.05;
+            }
+
+            h1 {
+                font-size: clamp(2.6rem, 5vw, 3rem);
+                letter-spacing: -0.01em;
+            }
+
+            h2 {
+                font-size: clamp(1.4rem, 2.6vw, 1.6rem);
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            p {
+                margin: 0 0 0.8rem;
+                font-size: 1.0rem;
+                line-height: 1.5;
+                color: var(--muted);
+                text-align: justify;
+                text-justify: inter-word;
+            }
+
+            p.no-justify {
+                text-align: left;
+            }
+
+            ul {
+                margin: 0 0 0.8rem;
+                padding-left: 1.25rem;
+                list-style-type: disc;
+                list-style-position: outside;
+            }
+
+            ul li {
+                margin: 0 0 0.8rem;
+                font-size: 1.0rem;
+                line-height: 1.5;
+                color: var(--muted);
+                text-align: justify;
+                text-justify: inter-word;
+            }
+
+            .newslist {
+                display: grid;
+                gap: 0.5rem 4px;
+                grid-template-columns: var(--news-date-width) var(--news-mid-width) 1fr;
+                align-items: start;
+                margin: 0 0 0.8rem;
+                position: relative;
+            }
+
+            .news-item {
+                display: contents;
+            }
+
+            .news-date {
+                text-align: left;
+                padding-right: 12px;
+                font-size: 1.0rem;
+                line-height: 1.5;
+                color: var(--muted);
+            }
+
+            .news-line {
+                position: relative;
+            }
+
+            .newslist::before {
+                content: "";
+                position: absolute;
+                left: calc(var(--news-date-width) + (var(--news-mid-width) / 2));
+                top: 0;
+                bottom: 0;
+                border-left: 2px dashed var(--rule);
+                pointer-events: none;
+                transform: translateX(-1px);
+                -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
+                -webkit-mask-repeat: no-repeat;
+                mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
+                mask-repeat: no-repeat;
+                z-index: 0;
+            }
+
+            .news-line::after {
+                content: "";
+                position: absolute;
+                left: 0%;
+                top: 6px;
+                transform: translateX(-5.5px);
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--paper);
+                border: 2px solid var(--rule);
+                z-index: 1;
+            }
+
+            .news-text {
+                font-size: 1.0rem;
+                line-height: 1.5;
+                color: var(--muted);
+                text-align: justify;
+                text-justify: inter-word;
+            }
+
+            .page {
+                max-width: var(--page-max);
+                margin: 0 auto;
+                padding: 0px 32px 80px;
+            }
+
+            .top-rule {
+                height: 6px;
+                background: var(--accent);
+                margin: 60px 0 6px;
+            }
+
+            .brand {
+                font-size: clamp(1.8rem, 3.5vw, 2rem);
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+
+            .header-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 16px;
+                padding-bottom: 8px;
+                border-bottom: 1.2px solid var(--rule);
+                margin-top: 72px;
+            }
+
+            .kicker {
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: var(--ink);
+            }
+
+            .meta-grid {
+                display: grid;
+                grid-template-columns: minmax(220px, 1fr) minmax(260px, 2fr);
+                gap: 22px;
+                border-top: 1.2px solid var(--rule);
+                padding: 18px 0;
+            }
+
+            .meta-list {
+                display: grid;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: var(--ink);
+                min-height: 120px;
+                max-height: 120px;
+            }
+
+            .meta-list span {
+                display: block;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--rule);
+            }
+
+            .abstract {
+            }
+
+            .abstract p {
+                text-align: left;
+            }
+
+            .body-grid {
+                display: grid;
+                grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr);
+                gap: 28px;
+                margin-top: 28px;
+            }
+
+            .body-grid h2 {
+                font-size: 1.4rem;
+                margin-bottom: 0.3rem
+            }
+
+            .body-grid h3 {
+                margin-bottom: 0.2rem
+            }
+
+            .rule {
+                height: 1.2px;
+                background: var(--rule);
+                margin: 24px 0;
+            }
+
+            .note {
+                font-size: 0.95rem;
+                color: var(--muted);
+            }
+
+            .lead-group {
+                margin-bottom: 48px;
+            }
+
+            .lead-title {
+                margin: 18px 0 18px;
+            }
+
+            .lead-subtitle {
+                margin: 0;
+                font-weight: 600;
+                color: var(--muted);
+            }
+
+            @media (max-width: 640px) {
+                .page {
+                    padding: 0 22px 60px;
+                }
+                /* .header-row {
+                    flex-direction: column;
+                    align-items: flex-start;
+                } */
+                .meta-grid,
+                .body-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 900px) {
+                .body-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="page">
+            <div class="top-rule"></div>
+            <div class="brand">natural portfolio</div>
+
+            <div class="header-row">
+                <div class="kicker">Review</div>
+                <a href="https://jedimasterlu.github.io">https://jedimasterlu.github.io</a>
+            </div>
+
+            <div class="lead-group">
+                <h1 class="lead-title">Junyuan Lu</h1>
+                <h2 class="lead-subtitle">PhD Student in MSE | Graduate Research Assistant</h2>
+            </div>
+            
+
+            <section class="meta-grid">
+                <div class="meta-list">
+                    <span>205 Gates Rd, Room 1101.6</span>
+                    <span>West Lafayette, IN 47907</span>
+                    <span>Email: <a href="mailto:lu1301@purdue.edu">lu1301@purdue.edu</a></span>
+                    <span>Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
+                </div>
+                <div class="abstract">
+                    <p>
+                        I am a PhD student in MSE working with <a href="https://www.jingangli.org" target="_blank" rel="noopener">Prof. Jingang Li</a> at Purdue University. My research lies at the intersection of nanomaterials, optics, neuromorphic computing, and AI for science.
+                    </p>
+                    <p>
+                        I earned a bachelor’s degree at Shanghai Jiao Tong University, studying in the Hsu Tzuyao Honor Class of School of Materials Science and Engineering. My graduation thesis won the Best Bachelor’s Thesis (top 1%) in 2025. My undergraduate work covers high-throughput experiments, optical phase change materials, phase field simulation, and solid-state electrolytes. Please check my projects page for more details.
+                    </p>
+                    <p>
+                        Please feel free to contact me if you are interested in my work or have any questions. I’d be glad to hear from you!
+                    </p>
+                </div>
+            </section>
+
+            <div class="body-grid">
+                <section>
+                    <h2>News</h2>
+                        <div class="newslist">
+                            <div class="news-item">
+                                <div class="news-date">Jan 28, 2026</div>
+                                <div class="news-line" aria-hidden="true"></div>
+                                <div class="news-text">My handbook chapter “Exciton dynamics in 2D quantum material heterostructures” is accepted by The Handbook of Two Dimensional Quantum Materials and Energy Applications!</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-date">Aug 26, 2025</div>
+                                <div class="news-line" aria-hidden="true"></div>
+                                <div class="news-text">I become a MSE PhD student in Prof. Jingang Li’s lab at Purdue University. Look forward to the study and life here!</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-date">Jun 30, 2025</div>
+                                <div class="news-line" aria-hidden="true"></div>
+                                <div class="news-text">I graduate from SJTU as an outstanding graduate of the university. Will never forget the wonderful past 4 years in SJTU.</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-date">Aug 24, 2024</div>
+                                <div class="news-line" aria-hidden="true"></div>
+                                <div class="news-text">My new website is live! I will be updating this website with my research, publications, and other news. Stay tuned!</div>
+                            </div>
+                        </div>
+                    <h2>Publications</h2>
+                    <SelectedPublications bibFileName="papers.bib" authorName="Junyuan Lu" />
+                    <p class="no-justify">
+                        <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
+                        {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
+                    </p>
+                </section>
+                <section>
+                </section>
+            </div>
+        </main>
+    </body>
 </html>
