@@ -1,5 +1,6 @@
 ---
-import Publications from "../components/Publications.astro";
+import Publications from "../components/publications.astro";
+import Portrait from "../components/portrait.astro";
 
 const scholarId = "g34jrUsAAAAJ";
 const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
@@ -234,14 +235,14 @@ try {
             }
 
             .kicker {
-                font-size: 1.4rem;
+                font-size: clamp(1.25rem, 2.5vw, 1.4rem);
                 font-weight: 700;
                 color: var(--ink);
             }
 
             .meta-grid {
                 display: grid;
-                grid-template-columns: minmax(220px, 1fr) minmax(260px, 2fr);
+                grid-template-columns: minmax(220px, 1fr) minmax(260px, 2.5fr);
                 gap: 22px;
                 border-top: 1.2px solid var(--rule);
                 padding: 18px 0;
@@ -250,6 +251,7 @@ try {
             .meta-list {
                 display: grid;
                 gap: 8px;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 font-size: 0.9rem;
                 color: var(--ink);
                 min-height: 120px;
@@ -369,6 +371,9 @@ try {
 
             <div class="body-grid">
                 <section>
+                    <h2>Portrait</h2>
+                    <Portrait imageName="portrait.png" caption="Fig 1 | Taken at DuSable Bridge, Chicago in December 2025." />
+                    
                     <h2>News</h2>
                         <div class="newslist">
                             <div class="news-item">
@@ -394,7 +399,7 @@ try {
                         </div>
                     <h2>Publications</h2>
                     <Publications bibFileName="papers.bib" authorName="Junyuan Lu" />
-                    <p class="no-justify">
+                    <p class="no-justify" style="margin-bottom: -1rem;">
                         <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
                         {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
                     </p>
