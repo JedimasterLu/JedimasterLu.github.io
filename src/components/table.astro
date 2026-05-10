@@ -1,0 +1,87 @@
+---
+interface Props {
+  caption?: string;
+}
+
+const { caption } = Astro.props;
+---
+
+<table class="three-line-table">
+  {caption ? <caption>{caption}</caption> : null}
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Materials Characterization</td>
+      <td>XRD, SEM, AFM, EDS, Ellipsometry, Optical Microscopy, Mechanical testing, Electrochemical workstation</td>
+    </tr>
+    <tr>
+      <td>Nanomaterial fabrication</td>
+      <td>E-beam evaporation, Ion-beam sputtering, Photolithography, Cleanroom operations</td>
+    </tr>
+    <tr>
+      <td>Programming languages</td>
+      <td>Python, MATLAB, C++, Lua, C#, Latex, Typst</td>
+    </tr>
+    <tr>
+      <td>Coding</td>
+      <td>Data analysis, Visualization, Machine learning, software development, Git</td>
+    </tr>
+    <tr>
+      <td>Languages</td>
+      <td>Chinese (Native), English (Fluent)</td>
+    </tr>
+  </tbody>
+</table>
+
+<style>
+  .three-line-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0 0.8rem;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .three-line-table caption {
+    caption-side: top;
+    padding: 0 0 0.4rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .three-line-table thead {
+    border-top: 1.2px solid var(--rule);
+    border-bottom: 1.2px solid var(--rule);
+  }
+
+  .three-line-table thead th {
+    padding: 0.5rem 0.5rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--ink);
+    vertical-align: top;
+  }
+
+  .three-line-table tbody tr {
+    border-bottom: none;
+  }
+
+  .three-line-table tbody tr:last-child {
+    border-bottom: 1.2px solid var(--rule);
+  }
+
+  .three-line-table td {
+    padding: 0.5rem 0.5rem;
+    color: var(--muted);
+    text-align: left;
+    vertical-align: top;
+  }
+</style>
