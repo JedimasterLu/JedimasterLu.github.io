@@ -328,6 +328,8 @@ try {
                 max-height: var(--body-grid-max-height);
                 margin-top: 2rem;
                 overflow: visible;
+                transition: max-height 420ms cubic-bezier(0.22, 1, 0.36, 1);
+                transition-property: max-height, opacity;
             }
 
             .body-block {
@@ -374,6 +376,14 @@ try {
                 margin: 0;
                 font-weight: 600;
                 color: var(--muted);
+            }
+
+            .copyright {
+                font-size: 0.8rem;
+                color: #bababa;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                margin-top: 1rem;
+                text-align: left;
             }
             
             @media (max-width: 375px) {
@@ -552,6 +562,8 @@ try {
             </div>
 
             <Footer github={github} linkedin={linkedin} year={new Date().getFullYear()} />
+            
+            <p class="copyright">Copyright © {new Date().getFullYear()} Junyuan Lu. All rights reserved.</p>
         </main>
 
         <script>
@@ -588,7 +600,11 @@ try {
                         probe.remove();
 
                         if (root.style.getPropertyValue("--body-grid-max-height") !== nextValue) {
+                            bodyGrid.classList.add("is-relayout");
                             root.style.setProperty("--body-grid-max-height", nextValue);
+                            window.setTimeout(() => {
+                                bodyGrid.classList.remove("is-relayout");
+                            }, 220);
                         }
                     });
                 };
