@@ -74,7 +74,7 @@ try {
                 --link: #0169a5;
                 --paper: #ffffff;
                 --page-max: 1024px;
-                --body-grid-max-height: 1850px;
+                --body-grid-max-height: none;
                 --news-date-width: 110px;
                 --news-mid-width: 12px;
             }
@@ -324,7 +324,7 @@ try {
             .body-grid {
                 column-count: 2;
                 column-gap: clamp(22px, 3vw, 28px);
-                column-fill: auto;
+                column-fill: balance;
                 max-height: var(--body-grid-max-height);
                 margin-top: 2rem;
                 overflow: visible;
@@ -337,7 +337,14 @@ try {
 
             .body-grid h2 {
                 font-size: 1.4rem;
-                margin-bottom: 0.3rem
+                margin-bottom: 0.3rem;
+                break-after: avoid-column;
+                page-break-after: avoid;
+            }
+
+            .body-block > h2 + * {
+                break-before: avoid-column;
+                page-break-before: avoid;
             }
 
             .body-grid h3 {
@@ -431,7 +438,7 @@ try {
                         I am a PhD student in MSE working with <a href="https://www.jingangli.org" target="_blank" rel="noopener">Prof. Jingang Li</a> at Purdue University. My research lies at the intersection of nanomaterials, optics, neuromorphic computing, and AI for science.
                     </p>
                     <p>
-                        I earned a bachelor’s degree at Shanghai Jiao Tong University, studying in the Hsu Tzuyao Honor Class of School of Materials Science and Engineering. My graduation thesis won the Best Bachelor’s Thesis (top 1%) in 2025. My undergraduate work covers high-throughput experiments, optical phase change materials, phase field simulation, and solid-state electrolytes. Please check my projects page for more details.
+                        I earned a bachelor’s degree at Shanghai Jiao Tong University, studying in the Hsu Tzuyao Honor Class of School of Materials Science and Engineering. My graduation thesis won the Best Bachelor’s Thesis (top 1%) in 2025. My undergraduate work covers high-throughput experiments, optical phase change materials, phase field simulation, and solid-state electrolytes.
                     </p>
                     <p>
                         Please feel free to contact me if you are interested in my work or have any questions. I’d be glad to hear from you!
@@ -546,5 +553,54 @@ try {
 
             <Footer github={github} linkedin={linkedin} year={new Date().getFullYear()} />
         </main>
+
+        <script>
+            const bodyGrid = document.querySelector(".body-grid");
+
+            if (bodyGrid) {
+                const root = document.documentElement;
+                let frameId = 0;
+
+                const updateBodyGridMaxHeight = () => {
+                    cancelAnimationFrame(frameId);
+                    frameId = requestAnimationFrame(() => {
+                        const styles = getComputedStyle(bodyGrid);
+                        const columnGap = parseFloat(styles.columnGap || "0") || 0;
+                        const columnWidth = Math.max(0, (bodyGrid.clientWidth - columnGap) / 2);
+                        const probe = bodyGrid.cloneNode(true) as HTMLElement;
+
+                        probe.style.position = "absolute";
+                        probe.style.left = "-99999px";
+                        probe.style.top = "0";
+                        probe.style.visibility = "hidden";
+                        probe.style.pointerEvents = "none";
+                        probe.style.width = `${columnWidth}px`;
+                        probe.style.height = "auto";
+                        probe.style.maxHeight = "none";
+                        probe.style.columnCount = "1";
+                        probe.style.columnGap = "0";
+                        probe.style.margin = "0";
+                        probe.style.overflow = "visible";
+
+                        document.body.appendChild(probe);
+
+                        const nextValue = `${Math.ceil(probe.scrollHeight + 48)}px`;
+                        probe.remove();
+
+                        if (root.style.getPropertyValue("--body-grid-max-height") !== nextValue) {
+                            root.style.setProperty("--body-grid-max-height", nextValue);
+                        }
+                    });
+                };
+
+                const resizeObserver = new ResizeObserver(updateBodyGridMaxHeight);
+
+                updateBodyGridMaxHeight();
+                resizeObserver.observe(bodyGrid);
+                window.addEventListener("load", updateBodyGridMaxHeight, { once: true });
+                window.addEventListener("resize", updateBodyGridMaxHeight);
+                document.fonts?.ready?.then(updateBodyGridMaxHeight);
+            }
+        </script>
     </body>
 </html>
