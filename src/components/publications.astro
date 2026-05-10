@@ -1,6 +1,8 @@
 ---
 import fs from 'fs/promises';
 import path from 'path';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 type BibFields = Record<string, string>;
 
@@ -154,6 +156,33 @@ function formatDoiUrl(doi: string | undefined): string | null {
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
   if (/^doi\.org\//i.test(trimmed)) return `https://${trimmed}`;
   return `https://doi.org/${trimmed}`;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderAbstract(abstract: string): string {
+  const parts = abstract.split(/(\{\$[^$]+\$\}|\$[^$]+\$)/g).filter(Boolean);
+  return parts
+    .map((part: string) => {
+      const inlineMath = part.match(/^\{\$(.*)\$\}$/s) || part.match(/^\$(.*)\$/s);
+      if (!inlineMath) {
+        return escapeHtml(part);
+      }
+
+      return katex.renderToString(inlineMath[1], {
+        displayMode: false,
+        throwOnError: false,
+        output: 'htmlAndMathml',
+      });
+    })
+    .join('');
 }
 
 const papers = parseBib(bib);
@@ -483,9 +512,7 @@ const groupedPapers: GroupedPapers[] = Array.from(
   // Set up on Astro view transitions
   document.addEventListener('astro:page-load', setupAllToggles);
 </script>        {f.abstract ? (
-                <div class="pub-abstract" id={`abstract-${p.key}`}>
-                  {f.abstract}
-                </div>
+                <div class="pub-abstract" id={`abstract-${p.key}`} set:html={renderAbstract(f.abstract)}></div>
               ) : null}
             </div>
           );
