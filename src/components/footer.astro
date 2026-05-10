@@ -1,0 +1,83 @@
+---
+const {
+    brand = "Natural Portfolio",
+    github = "",
+    linkedin = "",
+    year = new Date().getFullYear(),
+} = Astro.props;
+---
+
+<footer class="site-footer" aria-label="Site footer">
+    <div class="site-footer-row">
+            <div class="site-footer-left">
+                <span class="site-footer-brand">{brand}</span>
+                <span class="site-footer-sep">|</span>
+                {github || linkedin ? (
+                    <span class="site-footer-links">
+                        {github ? (
+                            <a class="site-footer-link" href={github} target="_blank" rel="noopener">GitHub</a>
+                        ) : null}
+                        {github && linkedin ? <span class="site-footer-sep">|</span> : null}
+                        {linkedin ? (
+                            <a class="site-footer-link" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
+                        ) : null}
+                    </span>
+                ) : (
+                    <span class="site-footer-text"></span>
+                )}
+            </div>
+        <div class="site-footer-year">{year}</div>
+    </div>
+</footer>
+
+<style>
+    .site-footer {
+        margin-top: 2rem;
+        padding-top: 0.3rem;
+        border-top: 1.2px solid var(--rule);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 1rem;
+    }
+
+    .site-footer-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .site-footer-left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.5rem;
+        align-items: baseline;
+        color: var(--muted);
+    }
+
+    .site-footer-brand,
+    .site-footer-year {
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .site-footer-sep {
+        color: var(--rule);
+    }
+
+    .site-footer-text {
+        font-weight: 400;
+    }
+
+    .site-footer-year {
+        flex: 0 0 auto;
+    }
+
+    .site-footer-link {
+        color: var(--link);
+        text-decoration: none;
+    }
+
+    .site-footer-link:hover {
+        text-decoration: underline;
+    }
+</style>

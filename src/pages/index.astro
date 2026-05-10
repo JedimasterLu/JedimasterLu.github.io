@@ -1,10 +1,14 @@
 ---
 import Publications from "../components/publications.astro";
 import Portrait from "../components/portrait.astro";
+import Footer from "../components/footer.astro";
 import Table from "../components/table.astro";
 
 const scholarId = "g34jrUsAAAAJ";
 const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
+
+const github = "https://github.com/JedimasterLu";
+const linkedin = "https://www.linkedin.com/in/junyuan-lu";
 
 let citations = "";
 let hIndex = "";
@@ -70,7 +74,7 @@ try {
                 --link: #0169a5;
                 --paper: #ffffff;
                 --page-max: 1024px;
-                --body-grid-max-height: 2000px;
+                --body-grid-max-height: 1850px;
                 --news-date-width: 110px;
                 --news-mid-width: 12px;
             }
@@ -323,7 +327,7 @@ try {
                 column-fill: auto;
                 max-height: var(--body-grid-max-height);
                 margin-top: 2rem;
-                overflow: hidden;
+                overflow: visible;
             }
 
             .body-block {
@@ -539,6 +543,8 @@ try {
                     <Table caption="Tab 1 | The skills involved in my work." />
                 </section>
             </div>
+
+            <Footer github={github} linkedin={linkedin} year={new Date().getFullYear()} />
         </main>
     </body>
 </html>
