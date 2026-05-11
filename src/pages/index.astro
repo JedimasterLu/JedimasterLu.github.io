@@ -32,8 +32,7 @@ try {
 <html lang="en-US">
     <head>
         <meta charset="utf-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon/icon.png" />
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <title>Junyuan Lu</title>
@@ -354,6 +353,29 @@ try {
                 margin-bottom: 0.2rem
             }
 
+            .additional-info h3 {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 1rem;
+                display: inline;
+                margin: 0;
+            }
+            .additional-info p {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                line-height: 1.2;
+                display: inline;
+                margin: 0;
+            }
+
+            .additional-info h3::after {
+                content: " ";
+            }
+
+            .additional-info p::after {
+                content: "";
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
             .rule {
                 height: 1.2px;
                 background: var(--rule);
@@ -380,8 +402,7 @@ try {
             }
 
             .copyright {
-                font-size: 0.8rem;
-                color: #bababa;
+                font-size: 0.9rem;
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 margin-top: 1rem;
                 text-align: left;
@@ -574,11 +595,20 @@ try {
                         <li>Art and design. Photography, typography, page layout, and graphic design.</li>
                     </ul>
                 </section>
+                <section class="body-block additional-info">
+                    <h2>Additional Information</h2>
+                    <h3>Contact</h3>
+                    <p>
+                        Please feel free to contact me if you are interested in my work or have any questions. The easiest way to reach me is via email.
+                    </p>
+                    <h3>Open Access</h3>
+                    <p>
+                        The source code of this website is available at <a href={github} target="_blank" rel="noopener">{github}</a>. The content of this website is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache 2.0 License</a>. A template for this website is under development.
+                    </p>
+                    <p class="copyright">Copyright © {new Date().getFullYear()} Junyuan Lu.</p>
+                </section>
             </div>
-
             <Footer github={github} linkedin={linkedin} year={new Date().getFullYear()} />
-            
-            <p class="copyright">Copyright © {new Date().getFullYear()} Junyuan Lu. All rights reserved.</p>
         </main>
 
         <script>
