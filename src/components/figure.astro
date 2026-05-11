@@ -8,13 +8,13 @@ const { imageName, caption } = Astro.props;
 const imagePath = `src/img/${imageName}`;
 ---
 
-<div class="portrait">
+<div class="figure">
   <img src={imagePath} alt={caption} />
-  <figcaption class="portrait-caption">{caption}</figcaption>
+  <figcaption class="figure-caption">{caption}</figcaption>
 </div>
 
 <style>
-  .portrait {
+  .figure {
     display: flex;
     flex-direction: column;
     align-items: left;
@@ -22,14 +22,14 @@ const imagePath = `src/img/${imageName}`;
     break-inside: avoid;
   }
 
-  .portrait img {
+  .figure img {
     max-width: min(100%, 470px);
     height: auto;
     margin-bottom: 0.8rem;
     margin-top: 0.2rem;
   }
 
-  .portrait-caption {
+  .figure-caption {
     font-size: 0.9rem;
     color: var(--muted);
     text-align: left;
