@@ -513,9 +513,8 @@ const groupedPapers: GroupedPapers[] = Array.from(
     const authorElements = document.querySelectorAll('.pub-authors');
     authorElements.forEach(el => {
       el.addEventListener('click', (e) => {
-        if ((e.target as Element).closest('.pub-author-toggle')) {
-          el.classList.toggle('is-expanded');
-        }
+        e.stopPropagation();
+        el.classList.toggle('is-expanded');
       });
     });
   }
