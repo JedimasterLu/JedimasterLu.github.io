@@ -251,15 +251,21 @@ const groupedPapers: GroupedPapers[] = Array.from(
     transition: opacity 0.35s ease-in-out;
   }
 
-  .pub-authors:hover .pub-author-hidden {
+  .pub-authors:hover .pub-author-hidden,
+  .pub-authors.is-expanded .pub-author-hidden {
     max-width: 100%;
     opacity: 1;
   }
 
-  .pub-authors:hover .pub-author-toggle {
+  .pub-authors:hover .pub-author-toggle,
+  .pub-authors.is-expanded .pub-author-toggle {
     opacity: 0;
     transition-delay: 0s;
     pointer-events: none;
+  }
+
+  .pub-authors {
+    cursor: pointer;
   }
 
   .pub-author-toggle:hover {
@@ -503,8 +509,20 @@ const groupedPapers: GroupedPapers[] = Array.from(
     });
   }
 
+  function setupAuthorToggles() {
+    const authorElements = document.querySelectorAll('.pub-authors');
+    authorElements.forEach(el => {
+      el.addEventListener('click', (e) => {
+        if ((e.target as Element).closest('.pub-author-toggle')) {
+          el.classList.toggle('is-expanded');
+        }
+      });
+    });
+  }
+
   function setupAllToggles() {
     setupAbstractToggles();
+    setupAuthorToggles();
   }
 
   // Set up on initial load
