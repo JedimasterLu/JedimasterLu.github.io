@@ -43,6 +43,19 @@ jobs:
           echo "Using Astro base path: ${BASE}"
           npm run build -- --base="${BASE}"
 
+      - name: Copy src images into build output
+        if: always()
+        shell: bash
+        run: |
+          echo "Copying src/img into dist/src/img (if exists)"
+          if [ -d "src/img" ]; then
+            mkdir -p dist/src
+            cp -R src/img dist/src/img
+            echo "Copied src/img -> dist/src/img"
+          else
+            echo "No src/img directory to copy"
+          fi
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
