@@ -358,10 +358,18 @@ try {
             }
 
             .additional-info {
+                text-align: left;
+            }
+
+            .additional-info-item {
                 text-align: justify;
-                -webkit-text-align-last: left;
                 text-align-last: left;
+                -webkit-text-align-last: left;
                 text-justify: inter-word;
+            }
+
+            .additional-info-item + .additional-info-item {
+                margin-top: 0.5rem;
             }
 
             .additional-info h3 {
@@ -608,18 +616,24 @@ try {
                 </section>
                 <section class="body-block additional-info">
                     <h2>Additional Information</h2>
-                    <h3>Contact</h3>
-                    <p>
-                        Please feel free to contact me if you are interested in my work or have any questions. The easiest way to reach me is via email.
-                    </p>
-                    <h3>Open Access</h3>
-                    <p>
-                        The source code of this website is available at <a href={github} target="_blank" rel="noopener">{github}</a>. The content of this website is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>. A template for this website is under development.
-                    </p>
-                    <h3>Acknowledgements</h3>
-                    <p>
-                        This website is built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>. The design of this site is inspired by the layout of <a href="https://www.nature.com/nmat/" target="_blank" rel="noopener">Nature Materials</a>. Fonts made from <a href="http://www.onlinewebfonts.com">Web Fonts</a> is licensed by CC BY 4.0
-                    </p>
+                    <div class="additional-info-item">
+                        <h3>Contact</h3>
+                        <p>
+                            Please feel free to contact me if you are interested in my work or have any questions. The easiest way to reach me is via email.
+                        </p>
+                    </div>
+                    <div class="additional-info-item">
+                        <h3>Open Access</h3>
+                        <p>
+                            The source code of this website is available at <a href={github} target="_blank" rel="noopener">{github}</a>. The content of this website is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>. A template for this website is under development.
+                        </p>
+                    </div>
+                    <div class="additional-info-item">
+                        <h3>Acknowledgements</h3>
+                        <p>
+                            This website is built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>. The design of this site is inspired by the layout of <a href="https://www.nature.com/nmat/" target="_blank" rel="noopener">Nature Materials</a>. Fonts made from <a href="http://www.onlinewebfonts.com">Web Fonts</a> is licensed by CC BY 4.0
+                        </p>
+                    </div>
                     <p class="copyright">Copyright © {new Date().getFullYear()} Junyuan Lu.</p>
                 </section>
             </div>
