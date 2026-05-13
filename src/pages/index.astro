@@ -75,7 +75,7 @@ try {
                 --paper: #ffffff;
                 --page-max: 1024px;
                 --body-grid-max-height: none;
-                --news-date-width: 110px;
+                --news-date-width: 70px;
                 --news-mid-width: 12px;
             }
 
@@ -180,7 +180,7 @@ try {
 
             ul {
                 margin: 0 0 0;
-                padding-left: 1rem;
+                padding-left: 1.15rem;
                 list-style-type: disc;
                 list-style-position: outside;
             }
@@ -302,6 +302,7 @@ try {
                 display: grid;
                 gap: 8px;
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-weight: 500;
                 font-size: 0.9rem;
                 color: var(--ink);
                 min-height: 120px;
@@ -319,6 +320,7 @@ try {
 
             .abstract p {
                 text-align: left;
+                font-size: 1.1rem;
             }
 
             .body-grid {
@@ -351,6 +353,9 @@ try {
 
             .body-grid h3 {
                 margin-bottom: 0.2rem
+            }
+            .additional-info {
+                text-align: justify;
             }
 
             .additional-info h3 {
@@ -408,12 +413,16 @@ try {
                 text-align: left;
             }
             
-            @media (max-width: 450px) {
+            @media (max-width: 500px) {
                 .meta-grid {
                     grid-template-columns: 1fr;
                 }
                 .meta-list {
                     max-height: none;
+                }
+                .abstract p {
+                    text-align: justify;
+                    font-size: 1.0rem;
                 }
             }
 
@@ -424,10 +433,6 @@ try {
                 .top-rule {
                     margin: 25px 0 6px;
                 }
-                /* .header-row {
-                    flex-direction: column;
-                    align-items: flex-start;
-                } */
                 .body-grid {
                     column-count: 1;
                     max-height: none;
@@ -581,7 +586,7 @@ try {
                 </section>
                 <section class="body-block">
                     <h2>Skills</h2>
-                    <Table caption="Tab 1 | The skills involved in my work." />
+                    <Table caption="Table 1 | The skills involved in my work." />
                 </section>
                 <section class="body-block">
                     <h2>Interests</h2>
