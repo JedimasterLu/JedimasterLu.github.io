@@ -42,6 +42,11 @@ try {
         <meta name="author" content="Junyuan Lu" />
         <meta name="robots" content="index, follow" />
         
+        <!-- Google Fonts: Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+        
         <style>
             @font-face {
                 font-family: "Harding";
@@ -83,6 +88,8 @@ try {
                 --body-grid-max-height: none;
                 --news-date-width: 70px;
                 --news-mid-width: 12px;
+                --sans-font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+                --serif-font: "Harding", serif;
             }
 
             * {
@@ -91,7 +98,7 @@ try {
 
             body {
                 margin: 0;
-                font-family: "Harding", serif;
+                font-family: var(--serif-font);
                 color: var(--ink);
                 background: var(--paper);
             }
@@ -278,7 +285,7 @@ try {
             .brand {
                 font-size: clamp(1.8rem, 3.5vw, 2rem);
                 font-weight: 700;
-                letter-spacing: -0.02em;
+                letter-spacing: -0.03em;
             }
 
             .header-row {
@@ -289,10 +296,13 @@ try {
                 padding-bottom: 8px;
                 border-bottom: 1.2px solid var(--rule);
                 margin-top: 72px;
+                font-family: var(--sans-font);
+                font-weight: 600;
+                font-size: clamp(0.95rem, 2vw, 1.0rem);
             }
 
             .kicker {
-                font-size: clamp(1.25rem, 2.5vw, 1.4rem);
+                font-size: clamp(1.1rem, 2vw, 1.2rem);
                 font-weight: 700;
                 color: var(--ink);
             }
@@ -307,8 +317,8 @@ try {
 
             .meta-list {
                 display: grid;
-                gap: 8px;
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                gap: 10px;
+                font-family: var(--sans-font);
                 font-weight: 500;
                 font-size: 0.9rem;
                 color: var(--ink);
@@ -318,7 +328,7 @@ try {
 
             .meta-list span {
                 display: block;
-                padding-bottom: 8px;
+                padding-bottom: 6px;
                 border-bottom: 1px solid var(--rule);
             }
 
@@ -378,13 +388,13 @@ try {
             }
 
             .additional-info h3 {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-family: var(--sans-font);
                 font-size: 1rem;
                 display: inline;
                 margin: 0;
             }
             .additional-info p {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-family: var(--sans-font);
                 line-height: 1.2;
                 display: inline;
                 margin: 0;
@@ -427,7 +437,7 @@ try {
 
             .copyright {
                 font-size: 0.9rem;
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-family: var(--sans-font);
                 margin-top: 1rem;
                 text-align: left;
             }

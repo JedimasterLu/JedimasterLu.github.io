@@ -32,10 +32,10 @@ const {
 
 <style>
     .site-footer {
-        margin-top: 3rem;
-        padding-top: 0.3rem;
+        margin-top: 2.5rem;
+        padding-top: 0.5rem;
         border-top: 1.2px solid var(--rule);
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family: var(--sans-font);
         font-size: 1rem;
         font-weight: 700;
     }
@@ -55,14 +55,20 @@ const {
         color: var(--muted);
     }
 
-    .site-footer-brand,
-    .site-footer-year {
+    .site-footer-brand {
         font-weight: 700;
+    }
+
+    .site-footer-year {
+        font-weight: 900;
         color: var(--ink);
+        font-size: 1.0rem;
     }
 
     .site-footer-sep {
         color: var(--rule);
+        font-weight: 400;
+        font-size: 0.9rem;
     }
 
     .site-footer-text {
@@ -76,6 +82,7 @@ const {
     .site-footer-link {
         color: var(--link);
         text-decoration: none;
+        font-weight: 600;
     }
 
     .site-footer-link:hover {
