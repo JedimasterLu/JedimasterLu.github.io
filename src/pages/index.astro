@@ -1,16 +1,167 @@
 ---
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import Publications from "../components/publications.astro";
 import Portrait from "../components/portrait.astro";
 import Footer from "../components/footer.astro";
 import Table from "../components/table.astro";
 import Figure from "../components/figure.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { site } from "../data/site";
+import settings from "../data/site-settings.json";
 import bodyGridScript from "../scripts/body-grid?raw";
 
-const scholarUrl = `https://scholar.google.com/citations?user=${site.links.scholarId}&hl=en`;
+const siteEntries = (await getCollection("site")) as CollectionEntry<"site">[];
+type SiteData = CollectionEntry<"site">["data"];
+type SiteSection = SiteData["section"];
+type SiteDataBySection<S extends SiteSection> = Extract<SiteData, { section: S }>;
+
+type MetaData = {
+  section: "meta";
+  title: string;
+  description: string;
+  keywords: string[];
+  robots: string;
+  googleSiteVerification: string;
+  favicon: string;
+};
+type BrandData = { section: "brand"; header: string; footer: string };
+type HeaderData = { section: "header"; kicker: string; linkText: string };
+type HeroData = { section: "hero"; name: string; subtitle: string };
+type ContactData = {
+  section: "contact";
+  addressLines: string[];
+  emailLabel: string;
+  lastUpdatedLabel: string;
+};
+type AboutData = { section: "about"; paragraphs: string[] };
+type PublicationsData = { section: "publications"; bibFileName: string; authorName: string };
+type SkillsData = {
+  section: "skills";
+  caption: string;
+  rows: { category: string; details: string }[];
+};
+type InterestsData = { section: "interests"; intro: string; items: string[] };
+type FooterData = { section: "footer"; brand: string };
+type SchemaData = {
+  section: "schema";
+  jobTitle: string;
+  affiliation: string;
+  alumniOf: string;
+  knowsAbout: string[];
+};
+type ProfileData = {
+  section: "profile";
+  authorName: string;
+  email: string;
+  github: string;
+  linkedin: string;
+};
+type PortraitData = { section: "portrait"; imageName: string; caption: string };
+
+const getSiteData = <S extends SiteSection>(section: S): SiteDataBySection<S> => {
+  const entry = siteEntries.find((item) => item.data.section === section);
+  if (!entry) {
+    throw new Error(`Missing content entry: site/${section}`);
+  }
+  return entry.data as SiteDataBySection<S>;
+};
+
+const metaData = getSiteData("meta") as MetaData;
+const brandData = getSiteData("brand") as BrandData;
+const headerData = getSiteData("header") as HeaderData;
+const heroData = getSiteData("hero") as HeroData;
+const contactData = getSiteData("contact") as ContactData;
+const aboutData = getSiteData("about") as AboutData;
+const publicationsData = getSiteData("publications") as PublicationsData;
+const skillsData = getSiteData("skills") as SkillsData;
+const interestsData = getSiteData("interests") as InterestsData;
+const footerData = getSiteData("footer") as FooterData;
+const schemaData = getSiteData("schema") as SchemaData;
+const profileData = getSiteData("profile") as ProfileData;
+const portraitData = getSiteData("portrait") as PortraitData;
+
+const tokens: Record<string, string> = {
+  siteUrl: settings.siteUrl,
+  authorName: profileData.authorName,
+  email: profileData.email,
+  github: profileData.github,
+  linkedin: profileData.linkedin,
+};
+
+const applyTokens = (value: string) =>
+  value.replace(/\{\{(\w+)\}\}/g, (match, key) => tokens[key] ?? match);
+
+const meta = {
+  title: applyTokens(metaData.title),
+  description: applyTokens(metaData.description),
+  keywords: metaData.keywords.map(applyTokens),
+  author: profileData.authorName,
+  robots: metaData.robots,
+  canonical: settings.siteUrl,
+  googleSiteVerification: metaData.googleSiteVerification,
+  favicon: metaData.favicon,
+};
+
+const brand = {
+  header: applyTokens(brandData.header),
+  footer: applyTokens(brandData.footer),
+};
+
+const header = {
+  kicker: applyTokens(headerData.kicker),
+  linkText: applyTokens(headerData.linkText),
+};
+
+const hero = {
+  name: applyTokens(heroData.name),
+  subtitle: applyTokens(heroData.subtitle),
+};
+
+const contact = {
+  addressLines: contactData.addressLines.map(applyTokens),
+  emailLabel: applyTokens(contactData.emailLabel),
+  lastUpdatedLabel: applyTokens(contactData.lastUpdatedLabel),
+};
+
+const aboutParagraphs = aboutData.paragraphs.map(applyTokens);
+
+const publications = {
+  bibFileName: publicationsData.bibFileName,
+  authorName: applyTokens(publicationsData.authorName),
+};
+
+const skills = {
+  caption: applyTokens(skillsData.caption),
+  rows: skillsData.rows.map((row: { category: string; details: string }) => ({
+    category: applyTokens(row.category),
+    details: applyTokens(row.details),
+  })),
+};
+
+const interests = {
+  intro: applyTokens(interestsData.intro),
+  items: interestsData.items.map(applyTokens),
+};
+
+const newsItems = ((await getCollection("news")) as CollectionEntry<"news">[])
+  .slice()
+  .sort((left, right) => right.data.date.localeCompare(left.data.date));
+
+const projects = ((await getCollection("projects")) as CollectionEntry<"projects">[])
+  .slice()
+  .sort((left, right) => left.data.order - right.data.order);
+
+const educationEntries = ((await getCollection("education")) as CollectionEntry<"education">[])
+  .slice()
+  .sort((left, right) => left.data.order - right.data.order);
+
+const additionalInfo = ((await getCollection("additional")) as CollectionEntry<"additional">[])
+  .slice()
+  .sort((left, right) => left.data.order - right.data.order);
+
+const scholarUrl = `https://scholar.google.com/citations?user=${settings.scholarId}&hl=en`;
 const scholarStatsPath = join(process.cwd(), "public", "data", "scholar-stats.json");
 
 let citations = "";
@@ -30,58 +181,58 @@ const lastUpdated = new Date().toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-const sameAs = [site.links.github, site.links.linkedin, scholarUrl].filter(Boolean) as string[];
+const sameAs = [profileData.github, profileData.linkedin, scholarUrl].filter(Boolean);
 
 const schema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: site.meta.author,
-  url: site.links.siteUrl,
-  jobTitle: site.schema.jobTitle,
+  name: profileData.authorName,
+  url: settings.siteUrl,
+  jobTitle: schemaData.jobTitle,
   affiliation: {
     "@type": "Organization",
-    name: site.schema.affiliation,
+    name: schemaData.affiliation,
   },
   alumniOf: {
     "@type": "Organization",
-    name: site.schema.alumniOf,
+    name: schemaData.alumniOf,
   },
-  email: site.links.email,
-  image: `${site.links.siteUrl}${site.meta.favicon}`,
+  email: profileData.email,
+  image: `${settings.siteUrl}${meta.favicon}`,
   sameAs,
-  knowsAbout: site.schema.knowsAbout,
+  knowsAbout: schemaData.knowsAbout,
 };
 ---
 
-<BaseLayout meta={site.meta} schema={schema}>
+<BaseLayout meta={meta} schema={schema}>
   <main class="page">
     <div class="top-rule"></div>
-    <div class="brand">{site.brand.header}</div>
+    <div class="brand">{brand.header}</div>
 
     <div class="header-row">
-      <div class="kicker">{site.header.kicker}</div>
-      <a href={site.links.siteUrl}>{site.header.linkText}</a>
+      <div class="kicker">{header.kicker}</div>
+      <a href={settings.siteUrl}>{header.linkText}</a>
     </div>
 
     <div class="lead-group">
-      <h1 class="lead-title">{site.hero.name}</h1>
-      <h2 class="lead-subtitle">{site.hero.subtitle}</h2>
+      <h1 class="lead-title">{hero.name}</h1>
+      <h2 class="lead-subtitle">{hero.subtitle}</h2>
     </div>
 
     <section class="meta-grid">
       <div class="meta-list">
-        {site.contact.addressLines.map((line) => (
+        {contact.addressLines.map((line: string) => (
           <span>{line}</span>
         ))}
         <span>
-          Email: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+          {contact.emailLabel} <a href={`mailto:${profileData.email}`}>{profileData.email}</a>
         </span>
         <span>
-          {site.contact.lastUpdatedLabel} {lastUpdated}
+          {contact.lastUpdatedLabel} {lastUpdated}
         </span>
       </div>
       <div class="abstract">
-        {site.about.paragraphs.map((paragraph) => (
+        {aboutParagraphs.map((paragraph: string) => (
           <p set:html={paragraph}></p>
         ))}
       </div>
@@ -90,17 +241,17 @@ const schema = {
     <div class="body-grid">
       <section class="body-block">
         <h2>Portrait</h2>
-        <Portrait imageName="portrait.png" caption="Fig 1 | Taken at DuSable Bridge, Chicago in December 2025." />
+        <Portrait imageName={portraitData.imageName} caption={portraitData.caption} />
       </section>
 
       <section class="body-block">
         <h2>News</h2>
         <div class="newslist">
-          {site.news.map((item) => (
+          {newsItems.map((item: CollectionEntry<"news">) => (
             <div class="news-item">
-              <div class="news-date">{item.date}</div>
+              <div class="news-date">{item.data.displayDate}</div>
               <div class="news-line" aria-hidden="true"></div>
-              <div class="news-text">{item.text}</div>
+              <div class="news-text">{item.data.text}</div>
             </div>
           ))}
         </div>
@@ -108,7 +259,7 @@ const schema = {
 
       <section class="body-block">
         <h2>Publications</h2>
-        <Publications bibFileName={site.publications.bibFileName} authorName={site.publications.authorName} />
+        <Publications bibFileName={publications.bibFileName} authorName={publications.authorName} />
         <p class="no-justify">
           <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
           {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
@@ -117,14 +268,17 @@ const schema = {
 
       <section class="body-block">
         <h2>Projects</h2>
-        {site.projects.map((project) => (
+        {projects.map((project: CollectionEntry<"projects">) => (
           <div class="project-block">
-            <h3>{project.title}</h3>
-            {project.figure ? (
-              <Figure imageName={project.figure.imageName} caption={project.figure.caption} />
+            <h3>{project.data.title}</h3>
+            {project.data.figure ? (
+              <Figure
+                imageName={project.data.figure.imageName}
+                caption={project.data.figure.caption}
+              />
             ) : null}
-            {project.paragraphs.map((paragraph) => (
-              <p set:html={paragraph}></p>
+            {project.data.paragraphs.map((paragraph: string) => (
+              <p set:html={applyTokens(paragraph)}></p>
             ))}
           </div>
         ))}
@@ -132,21 +286,21 @@ const schema = {
 
       <section class="body-block">
         <h2>Education</h2>
-        {site.education.map((entry) => (
+        {educationEntries.map((entry: CollectionEntry<"education">) => (
           <div class="education-block">
             <div class="quater-tag">
               <div class="quater-row">
-                <h4>{entry.degree}</h4>
-                <span class="quater-time">{entry.time}</span>
+                <h4>{entry.data.degree}</h4>
+                <span class="quater-time">{entry.data.time}</span>
               </div>
               <div class="quater-row">
-                <span class="quater-major">{entry.major}</span>
-                <span class="quater-school">{entry.school}</span>
+                <span class="quater-major">{entry.data.major}</span>
+                <span class="quater-school">{entry.data.school}</span>
               </div>
             </div>
-            {entry.bullets.length ? (
+            {entry.data.bullets.length ? (
               <ul>
-                {entry.bullets.map((bullet) => (
+                {entry.data.bullets.map((bullet: string) => (
                   <li>{bullet}</li>
                 ))}
               </ul>
@@ -157,14 +311,14 @@ const schema = {
 
       <section class="body-block">
         <h2>Skills</h2>
-        <Table caption={site.skills.caption} rows={site.skills.rows} />
+        <Table caption={skills.caption} rows={skills.rows} />
       </section>
 
       <section class="body-block">
         <h2>Interests</h2>
-        <p>{site.interests.intro}</p>
+        <p>{interests.intro}</p>
         <ul>
-          {site.interests.items.map((item) => (
+          {interests.items.map((item: string) => (
             <li>{item}</li>
           ))}
         </ul>
@@ -172,19 +326,19 @@ const schema = {
 
       <section class="body-block additional-info">
         <h2>Additional Information</h2>
-        {site.additionalInfo.map((item) => (
+        {additionalInfo.map((item: CollectionEntry<"additional">) => (
           <div class="additional-info-item">
-            <h3>{item.title}</h3>
-            <p set:html={item.body}></p>
+            <h3>{item.data.title}</h3>
+            <p set:html={applyTokens(item.data.body)}></p>
           </div>
         ))}
-        <p class="copyright">Copyright © {new Date().getFullYear()} {site.meta.author}.</p>
+        <p class="copyright">Copyright © {new Date().getFullYear()} {profileData.authorName}.</p>
       </section>
     </div>
     <Footer
-      brand={site.footer.brand}
-      github={site.footer.github}
-      linkedin={site.footer.linkedin}
+      brand={footerData.brand}
+      github={profileData.github}
+      linkedin={profileData.linkedin}
       year={new Date().getFullYear()}
     />
   </main>

@@ -1,9 +1,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import settings from '../src/data/site-settings.json' assert { type: 'json' };
 
-const scholarId = settings.scholarId;
-const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
+async function loadSettings() {
+  try {
+    const raw = await readFile(new URL('../src/data/site-settings.json', import.meta.url), 'utf-8');
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
 const outputPath = new URL('../public/data/scholar-stats.json', import.meta.url);
 
 async function readExistingCache() {
@@ -24,10 +29,22 @@ async function readExistingCache() {
 }
 
 async function main() {
+  const settings = await loadSettings();
+  const scholarId = settings?.scholarId ?? '';
+  const scholarUrl = scholarId
+    ? `https://scholar.google.com/citations?user=${scholarId}&hl=en`
+    : '';
   const fallback = await readExistingCache();
   let nextCache = { ...fallback };
 
   try {
+    if (!scholarUrl) {
+      console.warn('Missing scholarId in site settings; keeping existing cache.');
+      await mkdir(new URL('../public/data/', import.meta.url), { recursive: true });
+      await writeFile(outputPath, `${JSON.stringify(nextCache, null, 2)}\n`);
+      return;
+    }
+
     const response = await fetch(scholarUrl, {
       headers: {
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
