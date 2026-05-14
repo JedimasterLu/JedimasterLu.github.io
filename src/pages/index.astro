@@ -1,742 +1,193 @@
 ---
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import Publications from "../components/publications.astro";
 import Portrait from "../components/portrait.astro";
 import Footer from "../components/footer.astro";
 import Table from "../components/table.astro";
 import Figure from "../components/figure.astro";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../data/site";
+import bodyGridScript from "../scripts/body-grid?raw";
 
-const scholarId = "g34jrUsAAAAJ";
-const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
+const scholarUrl = `https://scholar.google.com/citations?user=${site.links.scholarId}&hl=en`;
 const scholarStatsPath = join(process.cwd(), "public", "data", "scholar-stats.json");
-
-const github = "https://github.com/JedimasterLu";
-const linkedin = "https://www.linkedin.com/in/junyuan-lu";
 
 let citations = "";
 let hIndex = "";
 
 try {
-    const stats = JSON.parse(await readFile(scholarStatsPath, "utf-8"));
-    citations = stats?.citations ?? "";
-    hIndex = stats?.hIndex ?? "";
+  const stats = JSON.parse(await readFile(scholarStatsPath, "utf-8"));
+  citations = stats?.citations ?? "";
+  hIndex = stats?.hIndex ?? "";
 } catch (e) {
-    console.error("Failed to read Google Scholar cache");
+  console.error("Failed to read Google Scholar cache");
 }
+
+const lastUpdated = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const sameAs = [site.links.github, site.links.linkedin, scholarUrl].filter(Boolean) as string[];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.meta.author,
+  url: site.links.siteUrl,
+  jobTitle: site.schema.jobTitle,
+  affiliation: {
+    "@type": "Organization",
+    name: site.schema.affiliation,
+  },
+  alumniOf: {
+    "@type": "Organization",
+    name: site.schema.alumniOf,
+  },
+  email: site.links.email,
+  image: `${site.links.siteUrl}${site.meta.favicon}`,
+  sameAs,
+  knowsAbout: site.schema.knowsAbout,
+};
 ---
 
-<html lang="en-US">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="icon" href="/icon/icon.png" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <meta name="google-site-verification" content="cnqTPrKVD8RRwIPCvdvYaCbcI16Q8svb5HJR9t-D8GM" />
-        <title>Junyuan Lu | my natural portfolio</title>
-        <meta name="description" content="Junyuan Lu - PhD student in Materials Science and Engineering at Purdue University. Research in nanomaterials, optical physics, neuromorphic computing, and AI for science. Graduate of Shanghai Jiao Tong University.">
-        <link rel="canonical" href="https://jedimasterlu.github.io" />
-        
-        <!-- Additional SEO -->
-        <meta name="keywords" content="materials science, nanomaterials, optical physics, neuromorphic computing, AI for science, PhD student" />
-        <meta name="author" content="Junyuan Lu" />
-        <meta name="robots" content="index, follow" />
-        
-        <!-- Google Fonts: Inter -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-        
-        <style>
-            @font-face {
-                font-family: "Harding";
-                src: url("/font/Harding_regular.woff2") format("woff2");
-                font-weight: 400;
-                font-style: normal;
-                font-display: swap;
-            }
-            @font-face {
-                font-family: "Harding";
-                src: url("/font/Harding_italic.woff2") format("woff2");
-                font-weight: 400;
-                font-style: italic;
-                font-display: swap;
-            }
-            @font-face {
-                font-family: "Harding";
-                src: url("/font/Harding_bold.woff2") format("woff2");
-                font-weight: 700;
-                font-style: normal;
-                font-display: swap;
-            }
-            @font-face {
-                font-family: "Harding";
-                src: url("/font/Harding_bold_italic.woff2") format("woff2");
-                font-weight: 700;
-                font-style: italic;
-                font-display: swap;
-            }
+<BaseLayout meta={site.meta} schema={schema}>
+  <main class="page">
+    <div class="top-rule"></div>
+    <div class="brand">{site.brand.header}</div>
 
-            :root {
-                --ink: #111111;
-                --muted: #222222;
-                --rule: #1b1b1b;
-                --accent: #185ba8;
-                --link: #0169a5;
-                --paper: #ffffff;
-                --page-max: 1100px;
-                --body-grid-max-height: none;
-                --news-date-width: 70px;
-                --news-mid-width: 12px;
-                --sans-font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-                --serif-font: "Harding", serif;
-            }
+    <div class="header-row">
+      <div class="kicker">{site.header.kicker}</div>
+      <a href={site.links.siteUrl}>{site.header.linkText}</a>
+    </div>
 
-            * {
-                box-sizing: border-box;
-            }
+    <div class="lead-group">
+      <h1 class="lead-title">{site.hero.name}</h1>
+      <h2 class="lead-subtitle">{site.hero.subtitle}</h2>
+    </div>
 
-            body {
-                margin: 0;
-                font-family: var(--serif-font);
-                color: var(--ink);
-                background: var(--paper);
-            }
+    <section class="meta-grid">
+      <div class="meta-list">
+        {site.contact.addressLines.map((line) => (
+          <span>{line}</span>
+        ))}
+        <span>
+          Email: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+        </span>
+        <span>
+          {site.contact.lastUpdatedLabel} {lastUpdated}
+        </span>
+      </div>
+      <div class="abstract">
+        {site.about.paragraphs.map((paragraph) => (
+          <p set:html={paragraph}></p>
+        ))}
+      </div>
+    </section>
 
-            a {
-                color: var(--link);
-                text-decoration: none;
-            }
+    <div class="body-grid">
+      <section class="body-block">
+        <h2>Portrait</h2>
+        <Portrait imageName="portrait.png" caption="Fig 1 | Taken at DuSable Bridge, Chicago in December 2025." />
+      </section>
 
-            a:hover {
-                text-decoration: underline;
-            }
-
-            h1,
-            h2,
-            h3 {
-                margin-top: 0.5rem;
-                margin-bottom: 0.2rem;
-                font-weight: 700;
-                line-height: 1.05;
-            }
-
-            h1 {
-                font-size: clamp(2.6rem, 5vw, 3rem);
-                letter-spacing: -0.01em;
-            }
-
-            h2 {
-                font-size: clamp(1.4rem, 2.6vw, 1.6rem);
-            }
-
-            h3 {
-                font-size: 1.2rem;
-            }
-
-            h4 {
-                font-size: 1rem;
-                margin: 0;
-            }
-
-            .quater-tag {
-                display: flex;
-                flex-direction: column;
-                gap: 0.1rem;
-                margin-top: 0.5rem;
-                margin-bottom: 0.2rem;
-            }
-
-            .quater-row {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                column-gap: 1rem;
-                align-items: start;
-            }
-
-            .quater-row h4 {
-                margin: 0;
-                font-weight: 700;
-            }
-
-            .quater-row .quater-time,
-            .quater-row .quater-major,
-            .quater-row .quater-school {
-                font-weight: 400;
-            }
-
-            .quater-row .quater-time,
-            .quater-row .quater-school {
-                text-align: right;
-            }
-
-            .quater-row .quater-major {
-                font-style: italic;
-            }
-
-            .quater-row .quater-school {
-                font-style: italic;
-            }
-
-            p {
-                margin: 0 0 0.7rem;
-                font-size: 1.0rem;
-                line-height: 1.5;
-                color: var(--muted);
-                text-align: justify;
-                text-justify: inter-word;
-                text-align-last: left;
-            }
-
-            p.no-justify {
-                text-align: left;
-            }
-
-            ul {
-                margin: 0 0 0;
-                padding-left: 1.15rem;
-                list-style-type: disc;
-                list-style-position: outside;
-            }
-
-            ul li {
-                margin: 0;
-                color: var(--muted);
-                text-align: justify;
-                text-justify: inter-word;
-                line-height: 1.5;
-            }
-
-            .newslist {
-                display: grid;
-                gap: 0.5rem 4px;
-                grid-template-columns: var(--news-date-width) var(--news-mid-width) 1fr;
-                align-items: start;
-                margin: 0 0 0.8rem;
-                position: relative;
-            }
-
-            .news-item {
-                display: contents;
-            }
-
-            .news-date {
-                text-align: left;
-                padding-right: 12px;
-                font-size: 1.0rem;
-                line-height: 1.5;
-                color: var(--muted);
-            }
-
-            .news-line {
-                position: relative;
-            }
-
-            .newslist::before {
-                content: "";
-                position: absolute;
-                left: calc(var(--news-date-width) + (var(--news-mid-width) / 2));
-                top: 0;
-                bottom: 0;
-                border-left: 2px dashed var(--rule);
-                pointer-events: none;
-                transform: translateX(-1px);
-                -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
-                -webkit-mask-repeat: no-repeat;
-                mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
-                mask-repeat: no-repeat;
-                z-index: 0;
-            }
-
-            .news-line::after {
-                content: "";
-                position: absolute;
-                left: 0%;
-                top: 6px;
-                transform: translateX(-5.5px);
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background: var(--paper);
-                border: 2px solid var(--rule);
-                z-index: 1;
-            }
-
-            .news-text {
-                font-size: 1.0rem;
-                line-height: 1.5;
-                color: var(--muted);
-                text-align: justify;
-                text-justify: inter-word;
-            }
-
-            .page {
-                max-width: var(--page-max);
-                margin: 0 auto;
-                padding: 0px 32px 80px;
-            }
-
-            .top-rule {
-                height: 6px;
-                background: var(--accent);
-                margin: 40px 0 6px;
-            }
-
-            .brand {
-                font-size: clamp(1.8rem, 3.5vw, 2rem);
-                font-weight: 700;
-                letter-spacing: -0.03em;
-            }
-
-            .header-row {
-                display: flex;
-                align-items: baseline;
-                justify-content: space-between;
-                gap: 16px;
-                padding-bottom: 8px;
-                border-bottom: 1.2px solid var(--rule);
-                margin-top: 72px;
-                font-family: var(--sans-font);
-                font-weight: 600;
-                font-size: clamp(0.95rem, 2vw, 1.0rem);
-            }
-
-            .kicker {
-                font-size: clamp(1.1rem, 2vw, 1.2rem);
-                font-weight: 700;
-                color: var(--ink);
-            }
-
-            .meta-grid {
-                display: grid;
-                grid-template-columns: minmax(190px, 1fr) minmax(260px, 2.5fr);
-                gap: 22px;
-                border-top: 1.2px solid var(--rule);
-                padding: 18px 0;
-            }
-
-            .meta-list {
-                display: grid;
-                gap: 10px;
-                font-family: var(--sans-font);
-                font-weight: 500;
-                font-size: 0.9rem;
-                color: var(--ink);
-                min-height: 120px;
-                max-height: 120px;
-            }
-
-            .meta-list span {
-                display: block;
-                padding-bottom: 6px;
-                border-bottom: 1px solid var(--rule);
-            }
-
-            .abstract {
-            }
-
-            .abstract p {
-                text-align: left;
-                font-size: 1.1rem;
-            }
-
-            .body-grid {
-                column-count: 2;
-                column-gap: clamp(22px, 4vw, 42px);
-                column-fill: balance;
-                max-height: var(--body-grid-max-height);
-                margin-top: 2rem;
-                overflow: visible;
-                transition: max-height 420ms cubic-bezier(0.22, 1, 0.36, 1);
-                transition-property: max-height, opacity;
-            }
-
-            .body-block {
-                break-inside: auto;
-                margin: 0 0 1rem;
-            }
-
-            .body-grid h2 {
-                font-size: 1.4rem;
-                margin-bottom: 0.3rem;
-                break-after: avoid-column;
-                page-break-after: avoid;
-            }
-
-            .body-block > h2 + * {
-                break-before: avoid-column;
-                page-break-before: avoid;
-            }
-
-            .body-grid h3 {
-                margin-bottom: 0.2rem
-            }
-
-            .additional-info {
-                text-align: left;
-            }
-
-            .additional-info-item {
-                text-align: justify;
-                text-align-last: left;
-                -webkit-text-align-last: left;
-                text-justify: inter-word;
-            }
-
-            .additional-info-item + .additional-info-item {
-                margin-top: 0.5rem;
-            }
-
-            .additional-info h3 {
-                font-family: var(--sans-font);
-                font-size: 1rem;
-                display: inline;
-                margin: 0;
-            }
-            .additional-info p {
-                font-family: var(--sans-font);
-                line-height: 1.2;
-                display: inline;
-                margin: 0;
-            }
-
-            .additional-info h3::after {
-                content: " ";
-            }
-
-            .additional-info p::after {
-                content: "";
-                display: block;
-                margin-bottom: 0.5rem;
-            }
-
-            .rule {
-                height: 1.2px;
-                background: var(--rule);
-                margin: 24px 0;
-            }
-
-            .note {
-                font-size: 0.95rem;
-                color: var(--muted);
-            }
-
-            .lead-group {
-                margin-bottom: 48px;
-            }
-
-            .lead-title {
-                margin: 18px 0 18px;
-            }
-
-            .lead-subtitle {
-                margin: 0;
-                font-weight: 600;
-                color: var(--muted);
-            }
-
-            .copyright {
-                font-size: 0.9rem;
-                font-family: var(--sans-font);
-                margin-top: 1rem;
-                text-align: left;
-            }
-            
-            @media (max-width: 500px) {
-                .meta-grid {
-                    grid-template-columns: 1fr;
-                }
-                .meta-list {
-                    max-height: none;
-                }
-                .abstract p {
-                    text-align: justify;
-                    font-size: 1.0rem;
-                }
-            }
-
-            @media (max-width: 640px) {
-                .page {
-                    padding: 0 22px 60px;
-                }
-                .top-rule {
-                    margin: 25px 0 6px;
-                }
-                .body-grid {
-                    column-count: 1;
-                    max-height: none;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .body-grid {
-                    column-count: 1;
-                    max-height: none;
-                }
-            }
-        </style>
-        
-        <!-- Schema.org Structured Data -->
-        <script type="application/ld+json" set:html={JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": "Junyuan Lu",
-            "url": "https://jedimasterlu.github.io",
-            "jobTitle": "PhD Student in Materials Science and Engineering",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "Purdue University"
-            },
-            "alumniOf": {
-                "@type": "Organization",
-                "name": "Shanghai Jiao Tong University"
-            },
-            "email": "lu1301@purdue.edu",
-            "image": "https://jedimasterlu.github.io/icon/icon.png",
-            "sameAs": [
-                "https://github.com/JedimasterLu",
-                "https://www.linkedin.com/in/junyuan-lu",
-                "https://scholar.google.com/citations?user=g34jrUsAAAAJ"
-            ],
-            "knowsAbout": [
-                "Materials Science",
-                "Nanomaterials",
-                "Optical Physics",
-                "Neuromorphic Computing",
-                "AI for Science"
-            ]
-        })}></script>
-    </head>
-    <body>
-        <main class="page">
-            <div class="top-rule"></div>
-            <div class="brand">natural portfolio</div>
-
-            <div class="header-row">
-                <div class="kicker">Review</div>
-                <a href="https://jedimasterlu.github.io">https://jedimasterlu.github.io</a>
+      <section class="body-block">
+        <h2>News</h2>
+        <div class="newslist">
+          {site.news.map((item) => (
+            <div class="news-item">
+              <div class="news-date">{item.date}</div>
+              <div class="news-line" aria-hidden="true"></div>
+              <div class="news-text">{item.text}</div>
             </div>
+          ))}
+        </div>
+      </section>
 
-            <div class="lead-group">
-                <h1 class="lead-title">Junyuan Lu</h1>
-                <h2 class="lead-subtitle">PhD Student in MSE | Graduate Research Assistant</h2>
+      <section class="body-block">
+        <h2>Publications</h2>
+        <Publications bibFileName={site.publications.bibFileName} authorName={site.publications.authorName} />
+        <p class="no-justify">
+          <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
+          {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
+        </p>
+      </section>
+
+      <section class="body-block">
+        <h2>Projects</h2>
+        {site.projects.map((project) => (
+          <div class="project-block">
+            <h3>{project.title}</h3>
+            {project.figure ? (
+              <Figure imageName={project.figure.imageName} caption={project.figure.caption} />
+            ) : null}
+            {project.paragraphs.map((paragraph) => (
+              <p set:html={paragraph}></p>
+            ))}
+          </div>
+        ))}
+      </section>
+
+      <section class="body-block">
+        <h2>Education</h2>
+        {site.education.map((entry) => (
+          <div class="education-block">
+            <div class="quater-tag">
+              <div class="quater-row">
+                <h4>{entry.degree}</h4>
+                <span class="quater-time">{entry.time}</span>
+              </div>
+              <div class="quater-row">
+                <span class="quater-major">{entry.major}</span>
+                <span class="quater-school">{entry.school}</span>
+              </div>
             </div>
-            
+            {entry.bullets.length ? (
+              <ul>
+                {entry.bullets.map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ))}
+      </section>
 
-            <section class="meta-grid">
-                <div class="meta-list">
-                    <span>205 Gates Rd, Room 1101.6</span>
-                    <span>West Lafayette, IN 47907</span>
-                    <span>Email: <a href="mailto:lu1301@purdue.edu">lu1301@purdue.edu</a></span>
-                    <span>Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
-                </div>
-                <div class="abstract">
-                    <p>
-                        I am a PhD student in MSE working with <a href="https://www.jingangli.org" target="_blank" rel="noopener">Prof. Jingang Li</a> at Purdue University. My research lies at the intersection of nanomaterials, optics, neuromorphic computing, and AI for science.
-                    </p>
-                    <p>
-                        I earned a bachelor’s degree at Shanghai Jiao Tong University, studying in the Hsu Tzuyao Honor Class of School of Materials Science and Engineering. My graduation thesis won the Best Bachelor’s Thesis (top 1%) in 2025. My undergraduate work covers high-throughput experiments, optical phase change materials, phase field simulation, and solid-state electrolytes.
-                    </p>
-                    <p>
-                        Please feel free to contact me if you are interested in my work or have any questions. I’d be glad to hear from you!
-                    </p>
-                </div>
-            </section>
+      <section class="body-block">
+        <h2>Skills</h2>
+        <Table caption={site.skills.caption} rows={site.skills.rows} />
+      </section>
 
-            <div class="body-grid">
-                <section class="body-block">
-                    <h2>Portrait</h2>
-                    <Portrait imageName="portrait.png" caption="Fig 1 | Taken at DuSable Bridge, Chicago in December 2025." />
-                </section>
+      <section class="body-block">
+        <h2>Interests</h2>
+        <p>{site.interests.intro}</p>
+        <ul>
+          {site.interests.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
 
-                <section class="body-block">
-                    <h2>News</h2>
-                    <div class="newslist">
-                        <div class="news-item">
-                            <div class="news-date">Jan 28, 2026</div>
-                            <div class="news-line" aria-hidden="true"></div>
-                            <div class="news-text">My handbook chapter “Exciton dynamics in 2D quantum material heterostructures” is accepted by The Handbook of Two Dimensional Quantum Materials and Energy Applications!</div>
-                        </div>
-                        <div class="news-item">
-                            <div class="news-date">Aug 26, 2025</div>
-                            <div class="news-line" aria-hidden="true"></div>
-                            <div class="news-text">I become a MSE PhD student in Prof. Jingang Li’s lab at Purdue University. Look forward to the study and life here!</div>
-                        </div>
-                        <div class="news-item">
-                            <div class="news-date">Jun 30, 2025</div>
-                            <div class="news-line" aria-hidden="true"></div>
-                            <div class="news-text">I graduate from SJTU as an outstanding graduate of the university. Will never forget the wonderful past 4 years in SJTU.</div>
-                        </div>
-                        <div class="news-item">
-                            <div class="news-date">Aug 24, 2024</div>
-                            <div class="news-line" aria-hidden="true"></div>
-                            <div class="news-text">My new website is live! I will be updating this website with my research, publications, and other news. Stay tuned!</div>
-                        </div>
-                    </div>
-                </section>
+      <section class="body-block additional-info">
+        <h2>Additional Information</h2>
+        {site.additionalInfo.map((item) => (
+          <div class="additional-info-item">
+            <h3>{item.title}</h3>
+            <p set:html={item.body}></p>
+          </div>
+        ))}
+        <p class="copyright">Copyright © {new Date().getFullYear()} {site.meta.author}.</p>
+      </section>
+    </div>
+    <Footer
+      brand={site.footer.brand}
+      github={site.footer.github}
+      linkedin={site.footer.linkedin}
+      year={new Date().getFullYear()}
+    />
+  </main>
 
-                <section class="body-block">
-                    <h2>Publications</h2>
-                    <Publications bibFileName="papers.bib" authorName="Junyuan Lu" />
-                    <p class="no-justify">
-                        <a href={scholarUrl} target="_blank" rel="noopener">Google Scholar</a>
-                        {citations && hIndex ? ` (citations: ${citations}, h-index: ${hIndex})` : ""}
-                    </p>
-                </section>
-
-                <section class="body-block">
-                    <h2>Projects</h2>
-                    <h3>Deep learning enhanced plasmonic physical unclonable function</h3>
-                    <p>
-                        Data stored in non-volatile memories is vulnarable to attack, especially in the AI era. For advanced security applications, we utilized the stochaisic dark field scattering signal of plasmonic structures formed via solid-state dewetting as permanant and unclonable fingerprints called physical unclonable functions. To overcome the instable imaging condition and artifacts, we trained a ConvNext-based model with deep contrastive learning, which exhibits extraordinary reliability under mechanical vibration and color shifting. This work is currently under review.
-                    </p>
-                    <h3>High-throughput screening of phase change materials</h3>
-                    <Figure imageName="hts_cover.png" caption="Fig 2 | Schematics of quarternary combinatorial thin film with various periodic configurations." />
-                    <p>
-                        This project systematically investigated the composition-parameter-structure-property relations of combinatorial super-latticelike thin films of GeSbSn(Se) and GeSbSeTe  using ion beam deposition and various high-throughput characterization methods. We utilized a moving mask integrated ion beam deposition system to fabricate combinatorial thin film with non-uniform composition distribution. We then applied high-throughput XRD, ellipsometry, and EDS to obtain the spatial distribution of composition, phase, and optical properties. Base on these high-throughput experimental data, we constructed the multi-parameter coupled structure-perperty relationships of the ternary and quaternary phase change material systems.
-                    </p>
-                    <p>
-                        The project was mentored by Hongjian Yuan and supervised by Prof. <a href="https://smse.sjtu.edu.cn/people/detail/274">Hong Wang</a>. It was funded by <a href="https://zirc.sjtu.edu.cn/Zirc/index">Zhiyuan Innovative Research Center</a> of Shanghai Jiao Tong University. The paper of this work has already been submitted. Our work on GeSbSn(Se) system has been published, and my graduation thesis on GeSbSeTe system won the Best Bachelor’s Thesis (top 1%) in 2025.
-                    </p>
-                    <h3>Adaptive mesh refinement accelerated simulation of laser-bed fusion</h3>
-                    <Figure imageName="pf_cover.png" caption="Fig 3 | Phase distribution visualization of a simulated bulk specimen produced by laser fusion." />
-                    <p>
-                        In this project, I am working as a research assistant in Prof. <a href="https://smse.sjtu.edu.cn/people/detail/39">Hong Liu</a>’s group at Shanghai Jiao Tong University. We introduced a two-step adaptive mesh refinement (AMR) approach to accelerate the phase field simulation of the microstructure evolution in laser-based addtive manufacturing.
-                    </p>
-                    <p>
-                        Although phase field models are widely used in phase distribution simulation, the mesh size needs to be adequately small to simulate the nucleation and growth process, which leads to extensive computational time and cost as consequences. We developed a two-step AMR strategy that, when there is nucleus formation inside a coarse grid, the grid will be automatically refined to fine mesh. In the opposite, if the fine mesh inside a coarse grid is mostly occupied by one phase, the grid will then be coarsened back. In this way, we are able to simulate the nucleation process while maintaining low amount of grids. This projects is still under development.
-                    </p>
-                    <h3>A symmetric Hebb-Wagner method for electron conductivity measurement</h3>
-                    <p>
-                        In this project, a symmetric Hebb-Wagner method was presented to address the challenge of accurately measuring the electron conductivity of LLZTO, a promising solid electrolyte for solid-state lithium-ion batteries, under different bias voltage, test duration, and temperature. This project was mentored by a senior doctorial student <a href="https://www.researchgate.net/profile/Li-Guoyao">Guoyao Li</a> and supervised by Prof. <a href="https://en.smse.sjtu.edu.cn/people_detail/195">Huanan Duan</a>.
-                    </p>
-                    <p>
-                        This was a <a href="https://uitp.sjtu.edu.cn/innovation/index.html">PRP project</a> funded by SJTU. My contribution included the preparation of LLZTO pellets, structural and electrochemical characterization, data analysis, writing, and a final project thesis defense.
-                    </p>
-                </section>
-                <section class="body-block">
-                    <h2>Education</h2>
-                    <div class="quater-tag">
-                        <div class="quater-row">
-                            <h4>Doctor of Philosophy</h4>
-                            <span class="quater-time">2025.08 ~ present</span>
-                        </div>
-                        <div class="quater-row">
-                            <span class="quater-major">Materials Engineering</span>
-                            <span class="quater-school">Purdue University</span>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Lynn Fellowship</li>
-                    </ul>
-                    <div class="quater-tag">
-                        <div class="quater-row">
-                            <h4>Bachelor of Engineering</h4>
-                            <span class="quater-time">2021.09 ~ 2025.06</span>
-                        </div>
-                        <div class="quater-row">
-                            <span class="quater-major">Mat. Sci. & Eng.</span>
-                            <span class="quater-school">Shanghai Jiao Tong University</span>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Best Bachelor’s Thesis (Top 1%)</li>
-                        <li>Outstanding Graduate</li>
-                    </ul>
-                </section>
-                <section class="body-block">
-                    <h2>Skills</h2>
-                    <Table caption="Table 1 | The skills involved in my work." />
-                </section>
-                <section class="body-block">
-                    <h2>Interests</h2>
-                    <p>
-                        My passions apart from research lie in:
-                    </p>
-                    <ul>
-                        <li>Classical music. Especially those between mid-classical and late-romantic periods. Favorite composers include Tchaikovsky, Brahms, Bach, and Beethoven.</li>
-                        <li>Violin. Have been playing since 7. Favorite pieces are Bach Violin Partita No. 2, Tchaikovsky Violin Concerto and Brahms Violin Concerto.</li>
-                        <li>Sports. Like playing table tennis. Like to watch Formula 1 and MLB.</li>
-                        <li>Art and design. Photography, typography, page layout, and graphic design.</li>
-                    </ul>
-                </section>
-                <section class="body-block additional-info">
-                    <h2>Additional Information</h2>
-                    <div class="additional-info-item">
-                        <h3>Contact</h3>
-                        <p>
-                            Please feel free to contact me if you are interested in my work or have any questions. The easiest way to reach me is via email.
-                        </p>
-                    </div>
-                    <div class="additional-info-item">
-                        <h3>Open Access</h3>
-                        <p>
-                            The source code of this website is available at <a href={github} target="_blank" rel="noopener">{github}</a>. The content of this website is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>. A template for this website is under development.
-                        </p>
-                    </div>
-                    <div class="additional-info-item">
-                        <h3>Acknowledgements</h3>
-                        <p>
-                            This website is built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>. The design of this site is inspired by the layout of <a href="https://www.nature.com/nmat/" target="_blank" rel="noopener">Nature Materials</a>. Fonts made from <a href="http://www.onlinewebfonts.com">Web Fonts</a> is licensed by CC BY 4.0
-                        </p>
-                    </div>
-                    <p class="copyright">Copyright © {new Date().getFullYear()} Junyuan Lu.</p>
-                </section>
-            </div>
-            <Footer github={github} linkedin={linkedin} year={new Date().getFullYear()} />
-        </main>
-
-        <script>
-            const bodyGrid = document.querySelector(".body-grid");
-
-            if (bodyGrid) {
-                const root = document.documentElement;
-                let frameId = 0;
-
-                const updateBodyGridMaxHeight = () => {
-                    cancelAnimationFrame(frameId);
-                    frameId = requestAnimationFrame(() => {
-                        const styles = getComputedStyle(bodyGrid);
-                        const columnGap = parseFloat(styles.columnGap || "0") || 0;
-                        const columnWidth = Math.max(0, (bodyGrid.clientWidth - columnGap) / 2);
-                        const probe = bodyGrid.cloneNode(true) as HTMLElement;
-
-                        probe.style.position = "absolute";
-                        probe.style.left = "-99999px";
-                        probe.style.top = "0";
-                        probe.style.visibility = "hidden";
-                        probe.style.pointerEvents = "none";
-                        probe.style.width = `${columnWidth}px`;
-                        probe.style.height = "auto";
-                        probe.style.maxHeight = "none";
-                        probe.style.columnCount = "1";
-                        probe.style.columnGap = "0";
-                        probe.style.margin = "0";
-                        probe.style.overflow = "visible";
-
-                        document.body.appendChild(probe);
-
-                        const nextValue = `${Math.ceil(probe.scrollHeight + 48)}px`;
-                        probe.remove();
-
-                        if (root.style.getPropertyValue("--body-grid-max-height") !== nextValue) {
-                            bodyGrid.classList.add("is-relayout");
-                            root.style.setProperty("--body-grid-max-height", nextValue);
-                            window.setTimeout(() => {
-                                bodyGrid.classList.remove("is-relayout");
-                            }, 220);
-                        }
-                    });
-                };
-
-                const resizeObserver = new ResizeObserver(updateBodyGridMaxHeight);
-
-                updateBodyGridMaxHeight();
-                resizeObserver.observe(bodyGrid);
-                window.addEventListener("load", updateBodyGridMaxHeight, { once: true });
-                window.addEventListener("resize", updateBodyGridMaxHeight);
-                document.fonts?.ready?.then(updateBodyGridMaxHeight);
-            }
-        </script>
-    </body>
-</html>
+  <script type="module" is:inline set:html={bodyGridScript}></script>
+</BaseLayout>

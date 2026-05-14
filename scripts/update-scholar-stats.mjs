@@ -1,7 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import settings from '../src/data/site-settings.json' assert { type: 'json' };
 
-const scholarId = 'g34jrUsAAAAJ';
+const scholarId = settings.scholarId;
 const scholarUrl = `https://scholar.google.com/citations?user=${scholarId}&hl=en`;
 const outputPath = new URL('../public/data/scholar-stats.json', import.meta.url);
 

@@ -1,4 +1,16 @@
 # natural-portfolio
 
-My personal website inspired by Nature journal. A template of this site is under development. Please feel free to reach out if you have any idea of journal style academic portfolio. It would be intruging if there is a combination of various journal styles in one template for researchers in all areas.
+A Nature-journal-inspired academic portfolio built with Astro.
+
+## Customize
+
+- Update [src/data/site-settings.json](src/data/site-settings.json) for site URL, author, social links, and SEO metadata.
+- Update [src/data/site.ts](src/data/site.ts) for page content such as bio, news, projects, and education.
+- Update [src/data/papers.bib](src/data/papers.bib) to manage the publications list.
+
+## Develop
+
+- `npm install`
+- `npm run dev`
+- `npm run build`
 
