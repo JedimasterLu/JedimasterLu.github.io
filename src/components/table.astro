@@ -1,9 +1,10 @@
 ---
 interface Props {
   caption?: string;
+  rows?: { category: string; details: string }[];
 }
 
-const { caption } = Astro.props;
+const { caption, rows = [] } = Astro.props;
 ---
 
 <table class="three-line-table">
@@ -15,26 +16,12 @@ const { caption } = Astro.props;
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Materials Characterization</td>
-      <td>XRD, SEM, AFM, EDS, Ellipsometry, Optical Microscopy, Mechanical testing, Electrochemical workstation</td>
-    </tr>
-    <tr>
-      <td>Nanomaterial fabrication</td>
-      <td>E-beam evaporation, Ion-beam sputtering, Photolithography, Cleanroom operations</td>
-    </tr>
-    <tr>
-      <td>Programming languages</td>
-      <td>Python, MATLAB, C++, Lua, C#, Latex, Typst</td>
-    </tr>
-    <tr>
-      <td>Coding</td>
-      <td>Data analysis, Visualization, Machine learning, software development, Git</td>
-    </tr>
-    <tr>
-      <td>Languages</td>
-      <td>Chinese (Native), English (Fluent)</td>
-    </tr>
+    {rows.map((row) => (
+      <tr>
+        <td>{row.category}</td>
+        <td>{row.details}</td>
+      </tr>
+    ))}
   </tbody>
 </table>
 

@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  meta: {
+    title: string;
+    description: string;
+    canonical: string;
+    keywords: string[];
+    author: string;
+    robots: string;
+    googleSiteVerification?: string;
+    favicon: string;
+  };
+  schema?: Record<string, unknown>;
+  lang?: string;
+}
+
+const { meta, schema, lang = "en-US" } = Astro.props;
+const keywords = Array.isArray(meta.keywords) ? meta.keywords.join(", ") : meta.keywords;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href={meta.favicon} />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    {meta.googleSiteVerification ? (
+      <meta name="google-site-verification" content={meta.googleSiteVerification} />
+    ) : null}
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={meta.author} />
+    <meta name="robots" content={meta.robots} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    {schema ? (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    ) : null}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
