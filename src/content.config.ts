@@ -99,6 +99,7 @@ const projects = defineCollection({
   schema: z.object({
     order: z.number(),
     title: z.string(),
+    hidden: z.boolean().optional(),
     paragraphs: z.array(z.string()),
     figure: z
       .object({
