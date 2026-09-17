@@ -276,15 +276,19 @@ const schema = {
                   <span class="project-disclosure-title">{project.data.title}</span>
                   <span class="project-disclosure-icon" aria-hidden="true"></span>
                 </summary>
-                {project.data.figure ? (
-                  <Figure
-                    imageName={project.data.figure.imageName}
-                    caption={project.data.figure.caption}
-                  />
-                ) : null}
-                {project.data.paragraphs.map((paragraph: string) => (
-                  <p set:html={applyTokens(paragraph)}></p>
-                ))}
+                <div class="project-disclosure-content">
+                  <div class="project-disclosure-body">
+                    {project.data.figure ? (
+                      <Figure
+                        imageName={project.data.figure.imageName}
+                        caption={project.data.figure.caption}
+                      />
+                    ) : null}
+                    {project.data.paragraphs.map((paragraph: string) => (
+                      <p set:html={applyTokens(paragraph)}></p>
+                    ))}
+                  </div>
+                </div>
               </details>
             ) : (
               <>
