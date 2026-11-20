@@ -545,15 +545,17 @@ ul li {
 /* ---------- Page layout with side navigation ---------- */
 .layout {
   display: grid;
-  grid-template-columns: var(--nav-width) minmax(0, var(--page-max));
+  /* equal flexible side columns keep the page centered; the nav lives in the left one,
+     the right one is an empty counterweight (it shrinks first when the window is narrow) */
+  grid-template-columns: minmax(var(--nav-width), 1fr) minmax(0, var(--page-max)) minmax(0, 1fr);
   column-gap: 44px;
-  justify-content: center;
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 48px 32px;
 }
 
 .layout > .page {
+  grid-column: 2;
   max-width: none;
   padding: 0 40px 80px;
   background: var(--paper);
@@ -566,6 +568,8 @@ ul li {
   position: sticky;
   top: 38.2vh;
   transform: translateY(-50%);
+  grid-column: 1;
+  grid-row: 1;
   align-self: start;
   justify-self: end;
   width: max-content;
