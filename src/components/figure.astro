@@ -17,9 +17,9 @@ const imagePath = `src/img/${imageName}`;
   .figure {
     display: flex;
     flex-direction: column;
-    align-items: left;
-    margin-bottom: 1rem;
-    break-inside: avoid;
+    align-items: center;
+    width: 100%;
+    margin: 0 0 1rem;
   }
 
   .figure img {
@@ -32,7 +32,10 @@ const imagePath = `src/img/${imageName}`;
   .figure-caption {
     font-size: 0.9rem;
     color: var(--muted);
-    text-align: left;
+    width: 100%;
+    text-align: justify;
+    text-align-last: left;
+    text-justify: inter-word;
     font-weight: 700;
   }
 </style>

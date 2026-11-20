@@ -234,28 +234,54 @@ const groupedPapers: GroupedPapers[] = Array.from(
     gap: 0.5rem;
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--rule);
-    break-inside: avoid-column;
     page-break-inside: avoid;
   }
 
   .pub-authors {
   }
 
+  /* The comma is part of the preceding author, so a wrapped line can never start with one. */
+  .pub-author {
+    white-space: nowrap;
+  }
+
+  /* Hidden authors: the separating space lives inside the wrapper, so when expanded it is an
+     ordinary breakable space (no margin that could show up as a leading gap on a wrapped line). */
   .pub-author-hidden {
-    display: inline-flex;
+    display: inline-block;
+    vertical-align: bottom;
     max-width: 0;
     opacity: 0;
     overflow: hidden;
     white-space: nowrap;
-    /* font-size: inherit;
-    line-height: inherit;
-    vertical-align: baseline; */
     transition: opacity 0.35s ease-in-out;
   }
 
   .pub-authors.is-expanded .pub-author-hidden {
-    max-width: 100%;
+    display: inline;
+    max-width: none;
     opacity: 1;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* wide screens: always show the full author list, no "..." toggle */
+  @media (min-width: 781px) {
+    .pub-author-hidden {
+      display: inline;
+      max-width: none;
+      opacity: 1;
+      overflow: visible;
+      white-space: normal;
+    }
+
+    .pub-author-toggle {
+      display: none;
+    }
+
+    .pub-authors {
+      cursor: default;
+    }
   }
 
   .pub-authors.is-expanded .pub-author-toggle {
@@ -386,7 +412,7 @@ const groupedPapers: GroupedPapers[] = Array.from(
     height: auto;
     display: block;
     margin-top: 2px;
-    border: 1px solid rgba(0,0,0,0.08);
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   }
 
   @media (max-width: 640px) {
@@ -417,6 +443,14 @@ const groupedPapers: GroupedPapers[] = Array.from(
           const hasMoreAuthors = authors.length > 3;
           const hasPreview = Boolean(previewUrl);
           const doiUrl = formatDoiUrl(f.doi);
+          const clean = (v: string | undefined) => (v ?? '').replace(/[{}]/g, '').trim();
+          const venue = clean(f.journal) || clean(f.booktitle);
+          const isBook = !f.journal && Boolean(f.booktitle);
+          const extra = [
+            isBook ? clean(f.publisher) : '',
+            isBook && f.pages ? `pp. ${clean(f.pages).replace(/--/g, '–')}` : '',
+            clean(f.year),
+          ].filter(Boolean).join(', ');
           return (
             <div class="pub-item" data-key={p.key}>
               <div class="pub-title">{formatTitle(f.title)}</div>
@@ -429,17 +463,18 @@ const groupedPapers: GroupedPapers[] = Array.from(
                           {authors.map((author, index) => {
                             const isHidden = index >= 3 && hasMoreAuthors;
                             return (
-                              <span class={isHidden ? 'pub-author-hidden' : ''}>
-                                {index > 0 ? ', ' : ''}
-                                {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
-                              </span>
+                              <>
+                                {isHidden
+                                  ? <span class="pub-author-hidden">{' '}<span class="pub-author">{isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}{index < authors.length - 1 ? ',' : ''}</span></span>
+                                  : <>{index > 0 ? ' ' : ''}<span class="pub-author">{isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}{index < authors.length - 1 ? ',' : ''}</span></>}
+                              </>
                             );
                           })}
                           {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
                         </div>
                         <div class="pub-citation">
-                          {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
-                          {f.year ? <span>{f.journal ? ', ' : ''}{f.year}</span> : null}
+                          {venue ? <strong class="pub-journal">{venue}</strong> : null}
+                          {extra ? <span>{venue ? ', ' : ''}{extra}</span> : null}
                         </div>
                       </div>
                       <div class="pub-actions">
@@ -462,17 +497,18 @@ const groupedPapers: GroupedPapers[] = Array.from(
                         {authors.map((author, index) => {
                           const isHidden = index >= 3 && hasMoreAuthors;
                           return (
-                            <span class={isHidden ? 'pub-author-hidden' : ''}>
-                              {index > 0 ? ', ' : ''}
-                              {isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}
-                            </span>
+                            <>
+                              {isHidden
+                                ? <span class="pub-author-hidden">{' '}<span class="pub-author">{isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}{index < authors.length - 1 ? ',' : ''}</span></span>
+                                : <>{index > 0 ? ' ' : ''}<span class="pub-author">{isUserAuthor(author) ? <strong>{renderAuthor(author)}</strong> : renderAuthor(author)}{index < authors.length - 1 ? ',' : ''}</span></>}
+                            </>
                           );
                         })}
                         {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
                       </div>
                       <div class="pub-citation">
-                        {f.journal ? <strong class="pub-journal">{f.journal}</strong> : null}
-                        {f.year ? <span>{f.journal ? ', ' : ''}{f.year}</span> : null}
+                        {venue ? <strong class="pub-journal">{venue}</strong> : null}
+                        {extra ? <span>{venue ? ', ' : ''}{extra}</span> : null}
                       </div>
                     </div>
                     <div class="pub-actions">

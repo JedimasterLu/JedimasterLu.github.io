@@ -1,5 +1,5 @@
 ---
 section: hero
 name: "{{authorName}}"
-subtitle: "PhD Student in MSE | Graduate Research Assistant"
+subtitle: "PhD Candidate in MSE | Graduate Research Assistant"
 ---

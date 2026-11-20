@@ -24,6 +24,16 @@ const keywords = Array.isArray(meta.keywords) ? meta.keywords.join(", ") : meta.
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href={meta.favicon} />
+    <script is:inline>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem("theme"); } catch (e) {}
+        if (t !== "light" && t !== "sepia" && t !== "dark") {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     {meta.googleSiteVerification ? (
