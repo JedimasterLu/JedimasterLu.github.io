@@ -58,6 +58,14 @@ const site = defineCollection({
       section: z.literal("interests"),
       intro: z.string(),
       items: z.array(z.string()),
+      listening: z.object({
+        label: z.string(),
+        title: z.string(),
+        composer: z.string(),
+        performers: z.string(),
+        cover: z.string(),
+        url: z.string(),
+      }),
     }),
     z.object({
       section: z.literal("footer"),

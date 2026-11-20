@@ -6,5 +6,5 @@ major: "Mat. Sci. & Eng."
 school: "Shanghai Jiao Tong University"
 bullets:
   - "Best Bachelor’s Thesis (Top 1%)"
-  - "Outstanding Graduate"
+  - "Outstanding Graduate in 2025"
 ---

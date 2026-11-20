@@ -42,7 +42,19 @@ type SkillsData = {
   caption: string;
   rows: { category: string; details: string }[];
 };
-type InterestsData = { section: "interests"; intro: string; items: string[] };
+type InterestsData = {
+  section: "interests";
+  intro: string;
+  items: string[];
+  listening: {
+    label: string;
+    title: string;
+    composer: string;
+    performers: string;
+    cover: string;
+    url: string;
+  };
+};
 type FooterData = { section: "footer"; brand: string };
 type SchemaData = {
   section: "schema";
@@ -143,6 +155,7 @@ const skills = {
 const interests = {
   intro: applyTokens(interestsData.intro),
   items: interestsData.items.map(applyTokens),
+  listening: interestsData.listening,
 };
 
 const newsItems = ((await getCollection("news")) as CollectionEntry<"news">[])
@@ -359,6 +372,19 @@ const schema = {
             <li>{item}</li>
           ))}
         </ul>
+        <p class="listening-label">{interests.listening.label}</p>
+        <a class="listening-card" href={interests.listening.url} target="_blank" rel="noopener">
+          <img
+            class="listening-cover"
+            src={interests.listening.cover}
+            alt={`Album cover: ${interests.listening.title}`}
+            loading="lazy"
+          />
+          <span class="listening-info">
+            <span class="listening-title">{interests.listening.composer}: {interests.listening.title}</span>
+            <span class="listening-artist">Played by {interests.listening.performers}</span>
+          </span>
+        </a>
       </section>
 
       <section class="body-block additional-info" id="additional">

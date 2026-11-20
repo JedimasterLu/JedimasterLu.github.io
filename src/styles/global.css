@@ -761,3 +761,48 @@ ul li {
     gap: 8px;
   }
 }
+
+.listening-label {
+  margin-top: 1.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.listening-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.8rem;
+  border: 1.2px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.listening-card:hover {
+  border-color: var(--accent);
+}
+
+.listening-cover {
+  width: 88px;
+  height: 88px;
+  flex: none;
+  object-fit: cover;
+}
+
+.listening-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.listening-title {
+  font-weight: 700;
+  font-size: 1.0rem;
+}
+
+.listening-artist {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.8rem;
+}
