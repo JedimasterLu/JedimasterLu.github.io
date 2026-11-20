@@ -229,6 +229,7 @@ const schema = {
 ---
 
 <BaseLayout meta={meta} schema={schema}>
+  <a class="skip-link" href="#about">Skip to content</a>
   <div class="layout">
   <SideNav items={navItems} />
   <main class="page">
@@ -242,7 +243,7 @@ const schema = {
 
     <div class="lead-group">
       <h1 class="lead-title">{hero.name}</h1>
-      <h2 class="lead-subtitle">{hero.subtitle}</h2>
+      <p class="lead-subtitle">{hero.subtitle}</p>
     </div>
 
     <section class="meta-grid" id="about">
@@ -273,14 +274,30 @@ const schema = {
       <section class="body-block" id="news">
         <h2>News</h2>
         <div class="newslist">
-          {newsItems.map((item: CollectionEntry<"news">) => (
+          {newsItems.slice(0, 4).map((item: CollectionEntry<"news">) => (
             <div class="news-item">
               <div class="news-date">{item.data.displayDate}</div>
               <div class="news-line" aria-hidden="true"></div>
-              <div class="news-text">{item.data.text}</div>
+              <div class="news-text" set:html={applyTokens(item.data.text)}></div>
             </div>
           ))}
+          {newsItems.length > 4 ? (
+            <div class="news-extra" id="news-extra" inert>
+              <div class="news-extra-inner">
+                {newsItems.slice(4).map((item: CollectionEntry<"news">) => (
+                  <div class="news-item">
+                    <div class="news-date">{item.data.displayDate}</div>
+                    <div class="news-line" aria-hidden="true"></div>
+                    <div class="news-text" set:html={applyTokens(item.data.text)}></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
+        {newsItems.length > 4 ? (
+          <button class="news-more" type="button" aria-expanded="false" aria-controls="news-extra">Show earlier news</button>
+        ) : null}
       </section>
 
       <section class="body-block" id="publications">
@@ -340,7 +357,7 @@ const schema = {
           <div class="education-block">
             <div class="quater-tag">
               <div class="quater-row">
-                <h4>{entry.data.degree}</h4>
+                <h3>{entry.data.degree}</h3>
                 <span class="quater-time">{entry.data.time}</span>
               </div>
               <div class="quater-row">
@@ -378,7 +395,6 @@ const schema = {
             class="listening-cover"
             src={interests.listening.cover}
             alt={`Album cover: ${interests.listening.title}`}
-            loading="lazy"
           />
           <span class="listening-info">
             <span class="listening-title">{interests.listening.composer}: {interests.listening.title}</span>
@@ -407,3 +423,13 @@ const schema = {
   </main>
   </div>
 </BaseLayout>
+
+<script>
+  const newsExtra = document.getElementById('news-extra');
+  const newsMore = document.querySelector<HTMLButtonElement>('.news-more');
+  newsMore?.addEventListener('click', () => {
+    const open = newsExtra!.classList.toggle('is-open');
+    newsExtra!.toggleAttribute('inert', !open);
+    newsMore.setAttribute('aria-expanded', String(open));
+    newsMore.textContent = open ? 'Show fewer' : 'Show earlier news';
+  });</script>

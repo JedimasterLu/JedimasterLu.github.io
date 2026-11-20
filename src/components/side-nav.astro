@@ -86,6 +86,8 @@ const { items } = Astro.props as Props;
       if (!nav) return;
       const y = window.scrollY;
       const delta = y - lastY;
+      // Keep the bar visible while a nav click is scrolling the page.
+      if (lockedId) { lastY = y; return; }
       if (y < 60 || delta < -4) nav.classList.remove('is-folded');
       else if (delta > 4) nav.classList.add('is-folded');
       if (Math.abs(delta) > 4) lastY = y;
@@ -105,16 +107,20 @@ const { items } = Astro.props as Props;
 
   function setupThemeSwitch() {
     const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.theme-btn'));
-    const apply = (theme: string) => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    // Every visit starts from the system setting; a manual pick lasts only for this page view.
+    let manual: string | null = null;
+    const apply = () => {
+      const theme = manual ?? (mq.matches ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', theme);
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeValue === theme)));
     };
-    apply(document.documentElement.getAttribute('data-theme') || 'light');
+    apply();
+    mq.addEventListener('change', () => { manual = null; apply(); });
     buttons.forEach((b) => {
       b.addEventListener('click', () => {
-        const theme = b.dataset.themeValue || 'light';
-        apply(theme);
-        try { localStorage.setItem('theme', theme); } catch (e) {}
+        manual = b.dataset.themeValue || 'light';
+        apply();
       });
     });
   }

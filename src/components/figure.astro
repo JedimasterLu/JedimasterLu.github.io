@@ -1,15 +1,18 @@
 ---
+import { Image } from "astro:assets";
+
 interface Props {
   imageName: string;
   caption: string;
 }
 
 const { imageName, caption } = Astro.props;
-const imagePath = `src/img/${imageName}`;
+const images = import.meta.glob<{ default: ImageMetadata }>("../img/*.{png,jpg,jpeg}", { eager: true });
+const image = images[`../img/${imageName}`]?.default;
 ---
 
 <div class="figure">
-  <img src={imagePath} alt={caption} />
+  {image && <Image src={image} alt={caption} width={1000} loading="eager" />}
   <figcaption class="figure-caption">{caption}</figcaption>
 </div>
 

@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { Image } from 'astro:assets';
 
 type BibFields = Record<string, string>;
 
@@ -34,8 +35,8 @@ for (const candidate of bibCandidates) {
   }
 }
 
-const images = import.meta.glob('../img/*.{png,jpg,jpeg,svg,gif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const imageMap: Record<string, string> = {};
+const images = import.meta.glob('../img/*.{png,jpg,jpeg}', { eager: true, import: 'default' }) as Record<string, ImageMetadata>;
+const imageMap: Record<string, ImageMetadata> = {};
 for (const k in images) {
   const parts = k.split('/');
   const name = parts[parts.length - 1];
@@ -185,6 +186,15 @@ function renderAbstract(abstract: string): string {
     .join('');
 }
 
+// BibTeX for the "copy" button (abstract/preview are site-only fields)
+function toBibtex(p: PaperEntry): string {
+  const body = Object.entries(p.fields)
+    .filter(([k]) => k !== 'abstract' && k !== 'preview')
+    .map(([k, v]) => `  ${k} = {${v}},`)
+    .join('\n');
+  return `@${p.type}{${p.key},\n${body}\n}`;
+}
+
 const papers = parseBib(bib);
 
 type GroupedPapers = {
@@ -284,14 +294,17 @@ const groupedPapers: GroupedPapers[] = Array.from(
     }
   }
 
-  .pub-authors.is-expanded .pub-author-toggle {
-    opacity: 0;
-    transition-delay: 0s;
-    pointer-events: none;
+  .pub-author-toggle {
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 
-  .pub-authors {
-    cursor: pointer;
+  .pub-authors.is-expanded .pub-author-toggle {
+    visibility: hidden;
   }
 
   .pub-author-toggle:hover {
@@ -363,15 +376,34 @@ const groupedPapers: GroupedPapers[] = Array.from(
     text-decoration: underline;
   }
 
-  .pub-actions-sep {
-    color: var(--ink);
+  .pub-actions > * + * {
+    padding-left: 12px;
+    border-left: 1px solid var(--rule);
   }
 
   .pub-link a:hover {
     text-decoration: underline;
   }
 
-  .pub-abstract-toggle {
+  /* CSS chevron: same box in both states, only rotated, so the width never changes */
+  .pub-abstract-toggle::after {
+    content: "";
+    display: inline-block;
+    width: 0.4em;
+    height: 0.4em;
+    margin-left: 0.4em;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.15em) rotate(45deg);
+    transition: transform 200ms ease;
+  }
+
+  .pub-abstract-toggle[aria-expanded="true"]::after {
+    transform: translateY(0.05em) rotate(225deg);
+  }
+
+  .pub-abstract-toggle,
+  .pub-bib-copy {
     background: none;
     border: none;
     color: var(--link);
@@ -381,7 +413,8 @@ const groupedPapers: GroupedPapers[] = Array.from(
     font-family: inherit;
   }
 
-  .pub-abstract-toggle:hover {
+  .pub-abstract-toggle:hover,
+  .pub-bib-copy:hover {
     text-decoration: underline;
   }
 
@@ -391,9 +424,9 @@ const groupedPapers: GroupedPapers[] = Array.from(
     opacity: 0;
     transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-top 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;
     margin-top: 0;
-    font-size: 0.8rem;
-    color: var(--ink-muted, #676767);
-    line-height: 1.2;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.45;
     text-align: justify;
   }
 
@@ -470,7 +503,7 @@ const groupedPapers: GroupedPapers[] = Array.from(
                               </>
                             );
                           })}
-                          {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
+                          {hasMoreAuthors ? <>{' '}<button class="pub-author-toggle" type="button" aria-expanded="false" title="Show all authors">...</button></> : null}
                         </div>
                         <div class="pub-citation">
                           {venue ? <strong class="pub-journal">{venue}</strong> : null}
@@ -479,14 +512,15 @@ const groupedPapers: GroupedPapers[] = Array.from(
                       </div>
                       <div class="pub-actions">
                         {f.url ? <div class="pub-link"><a href={f.url} target="_blank" rel="noopener">Link</a></div> : null}
+                      {f.pdf ? <div class="pub-link"><a href={f.pdf} target="_blank" rel="noopener">PDF</a></div> : null}
                         {f.abstract ? <button class="pub-abstract-toggle" aria-expanded="false" aria-controls={`abstract-${p.key}`}>Abstract</button> : null}
-                        {f.abstract && doiUrl ? <span class="pub-actions-sep">|</span> : null}
-                        {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
+                      <button class="pub-bib-copy" type="button" data-bib={toBibtex(p)}>BibTeX</button>
+                                                {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
                       </div>
                     </div>
                   </div>
                   <div class="pub-preview">
-                    <img src={previewUrl} alt={`preview-${p.key}`} />
+                    <Image src={previewUrl!} alt={formatTitle(f.title)} width={400} loading="eager" />
                   </div>
                 </div>
               ) : (
@@ -504,7 +538,7 @@ const groupedPapers: GroupedPapers[] = Array.from(
                             </>
                           );
                         })}
-                        {hasMoreAuthors ? <span class="pub-author-toggle" title="Show all authors"> ...</span> : null}
+                        {hasMoreAuthors ? <>{' '}<button class="pub-author-toggle" type="button" aria-expanded="false" title="Show all authors">...</button></> : null}
                       </div>
                       <div class="pub-citation">
                         {venue ? <strong class="pub-journal">{venue}</strong> : null}
@@ -513,9 +547,10 @@ const groupedPapers: GroupedPapers[] = Array.from(
                     </div>
                     <div class="pub-actions">
                       {f.url ? <div class="pub-link"><a href={f.url} target="_blank" rel="noopener">Link</a></div> : null}
+                      {f.pdf ? <div class="pub-link"><a href={f.pdf} target="_blank" rel="noopener">PDF</a></div> : null}
                       {f.abstract ? <button class="pub-abstract-toggle" aria-expanded="false" aria-controls={`abstract-${p.key}`}>Abstract</button> : null}
-                      {f.abstract && doiUrl ? <span class="pub-actions-sep">|</span> : null}
-                      {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
+                      <button class="pub-bib-copy" type="button" data-bib={toBibtex(p)}>BibTeX</button>
+                                            {doiUrl ? <a class="pub-doi" href={doiUrl} target="_blank" rel="noopener">DOI</a> : null}
                     </div>
                   </div>
                 </div>
@@ -546,11 +581,24 @@ const groupedPapers: GroupedPapers[] = Array.from(
   }
 
   function setupAuthorToggles() {
-    const authorElements = document.querySelectorAll('.pub-authors');
-    authorElements.forEach(el => {
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        el.classList.toggle('is-expanded');
+    document.querySelectorAll('.pub-author-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.pub-authors')?.classList.add('is-expanded');
+        btn.setAttribute('aria-expanded', 'true');
+      });
+    });
+  }
+
+  function setupBibCopy() {
+    document.querySelectorAll<HTMLButtonElement>('.pub-bib-copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.bib || '');
+          btn.textContent = 'Copied!';
+        } catch (e) {
+          btn.textContent = 'Failed';
+        }
+        setTimeout(() => { btn.textContent = 'BibTeX'; }, 1500);
       });
     });
   }
@@ -558,6 +606,7 @@ const groupedPapers: GroupedPapers[] = Array.from(
   function setupAllToggles() {
     setupAbstractToggles();
     setupAuthorToggles();
+    setupBibCopy();
   }
 
   // Set up on initial load

@@ -140,8 +140,9 @@ h4 {
   align-items: start;
 }
 
-.quater-row h4 {
+.body-grid .quater-row h3 {
   margin: 0;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -165,6 +166,7 @@ h4 {
 }
 
 p {
+  hyphens: auto;
   margin: 0 0 0.7rem;
   font-size: 1rem;
   line-height: 1.5;
@@ -186,6 +188,7 @@ ul {
 }
 
 ul li {
+  hyphens: auto;
   margin: 0;
   color: var(--muted);
   text-align: justify;
@@ -249,6 +252,7 @@ ul li {
 }
 
 .news-text {
+  hyphens: auto;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--muted);
@@ -417,23 +421,25 @@ ul li {
   opacity: 0;
 }
 
-.project-disclosure-content {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: max-height 320ms ease, opacity 320ms ease, transform 320ms ease, margin-top 320ms ease;
+/* animate both open and close (needs ::details-content; older browsers just snap) */
+.project-disclosure {
+  interpolate-size: allow-keywords;
 }
 
-.project-disclosure[open] .project-disclosure-content {
-  max-height: 60rem;
+.project-disclosure::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: height 320ms ease, opacity 320ms ease, content-visibility 320ms allow-discrete;
+}
+
+.project-disclosure[open]::details-content {
+  height: auto;
   opacity: 1;
-  transform: translateY(0);
-  margin-top: 0.4rem;
 }
 
 .project-disclosure-body {
-  overflow: hidden;
+  padding-top: 0.4rem;
 }
 
 .additional-info {
@@ -496,6 +502,9 @@ ul li {
 
 .lead-subtitle {
   margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 1.6rem);
+  line-height: 1.05;
+  text-align: left;
   font-weight: 600;
   color: var(--muted);
 }
@@ -657,8 +666,8 @@ ul li {
 }
 
 .theme-btn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border-radius: 50%;
   border: 1.5px solid var(--rule);
@@ -668,8 +677,7 @@ ul li {
 
 .theme-btn[data-theme-value="light"] { background: #ffffff; }
 .theme-btn[data-theme-value="sepia"] { background: #f4ecd8; }
-.theme-btn[data-theme-value="dark"] { background: #16181c; }
-
+.theme-btn[data-theme-value="dark"] { background: #1a1c21; }
 .theme-btn[aria-pressed="true"] {
   box-shadow: 0 0 0 2px var(--outer), 0 0 0 4px var(--accent);
 }
@@ -809,4 +817,118 @@ ul li {
   color: var(--muted);
   font-style: normal;
   font-size: 0.8rem;
+}
+
+/* dark: the drop shadow is invisible, use a hairline edge instead */
+:root[data-theme="dark"] .layout > .page {
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+/* earlier news: collapsed by default, animated open/close via the 0fr -> 1fr row trick */
+.news-extra {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: -0.5rem; /* cancels the row gap while collapsed */
+  opacity: 0;
+  transition: grid-template-rows 320ms ease, margin-top 320ms ease, opacity 320ms ease;
+}
+
+.news-extra.is-open {
+  grid-template-rows: 1fr;
+  margin-top: 0;
+  opacity: 1;
+}
+
+.news-extra-inner {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: var(--news-date-width) var(--news-mid-width) 1fr;
+  gap: 0.5rem 4px;
+  align-items: start;
+}
+
+.news-more {
+  margin: 0 0 0.8rem;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--link);
+  font: inherit;
+  cursor: pointer;
+}
+
+.news-more:hover {
+  text-decoration: underline;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 20;
+  padding: 8px 12px;
+  background: var(--paper);
+  font-family: var(--sans-font);
+}
+
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+}
+
+@media print {
+  :root,
+  :root[data-theme] {
+    --ink: #111111;
+    --muted: #222222;
+    --rule: #1b1b1b;
+    --link: #0169a5;
+    --paper: #ffffff;
+    --outer: #ffffff;
+  }
+
+  .side-nav,
+  .skip-link,
+  .news-more {
+    display: none !important;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  /* print renders a single frame: no transitions, so nothing is caught mid-animation */
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  /* browsers skip background colors when printing unless told otherwise */
+  .top-rule {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .layout {
+    display: block;
+    padding: 0;
+  }
+
+  .layout > .page {
+    padding: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  p a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
 }
