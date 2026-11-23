@@ -449,13 +449,25 @@ const groupedPapers: GroupedPapers[] = Array.from(
   }
 
   @media (max-width: 640px) {
+    /* thumbnail scales with the viewport (96px at ~300px wide, 160px cap) */
     .pub-preview img {
-      max-width: 160px;
+      max-width: none;
     }
 
     .pub-main {
-      grid-template-columns: minmax(0, 1fr) 160px;
+      grid-template-columns: minmax(0, 1fr) clamp(96px, 32vw, 160px);
       gap: 12px;
+    }
+
+    /* let the action links wrap instead of running under the thumbnail */
+    .pub-actions {
+      flex-wrap: wrap;
+      gap: 4px 14px;
+    }
+
+    .pub-actions > * + * {
+      padding-left: 0;
+      border-left: none;
     }
   }
 </style>

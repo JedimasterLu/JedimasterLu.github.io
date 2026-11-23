@@ -820,8 +820,11 @@ ul li {
 }
 
 /* dark: the drop shadow is invisible, use a hairline edge instead */
-:root[data-theme="dark"] .layout > .page {
-  box-shadow: 0 0 0 1px var(--rule);
+/* desktop only: on mobile the page is full-bleed, so no frame */
+@media (min-width: 961px) {
+  :root[data-theme="dark"] .layout > .page {
+    box-shadow: 0 0 0 1px var(--rule);
+  }
 }
 
 /* earlier news: collapsed by default, animated open/close via the 0fr -> 1fr row trick */
